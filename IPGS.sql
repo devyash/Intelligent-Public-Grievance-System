@@ -1,3 +1,12 @@
+/* 
+Doubts as of now:
+1) Should I use varchar() instead of text
+2)In Comments table I want to make C_id & C_SqNO as primary key. dont know how to make it.
+3)Using Issue type as an Enum. Is it alright ? or should I use array or some other data type 
+as I wish to restrain the choices to limited choices
+4) not sure if the database overall uses the right design schema. Didn't make it totally normalized.(Not so sure :P)
+*/
+
 CREATE TYPE Type AS ENUM ('Potholes','Pipeline Issue','Parking Issue','Animal distress');
 
 CREATE TABLE Users(
