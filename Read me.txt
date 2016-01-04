@@ -1,0 +1,3 @@
+##Destructor.sql
+##Destroys all the tables. Basically used for testing.
+##use \i destory.sql to import the sql file in psql
