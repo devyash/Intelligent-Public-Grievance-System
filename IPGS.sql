@@ -46,7 +46,8 @@ CREATE TABLE Comments(
 	C_Content text,
 	/*Time stamp with timezone*/
 	C_time timestamptz DEFAULT CURRENT_TIMESTAMP,
-	C_Id serial references Issues(I_Id), C_SqNo serial,
+	C_Id serial references Issues(I_Id),
+	C_SqNo serial,
 	PRIMARY KEY (C_Id, C_SqNo)
 	
 
