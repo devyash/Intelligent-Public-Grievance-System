@@ -5,13 +5,14 @@
 def getNearbyIssues(lat, lng):
 	#within a given area lat (lat +1 mintue - 1 mintue as 1 minute is 1.8 kms ) 
 	#Select I_ID from Comments where (I_lat>lat-1 min & I_lat<lat+1 min)&&(I_lng>lng-1 min & I_lng<lng+1 min)
-	#return dictionary OF Issue ID
+	#return array OF Issue ID
 
-def getAllIssues(dictionary of I_Id):
+def getAllIssues(array of I_Id):
+	#Call  if (isI_Visible(I_Id))=> true then proceed ahead else dont return that issue  
 	#return: a dictionary that will contain image,I_title,IssueID,votes(will call getvotes for this to return),I_lat,I_lng
 	#A_Issue object
 
-def getIssues(I_Id):
+def getIssues(I_Id): 
 	#Displaying Everything we have on that issue
 	#return lat, lng, title, content, image, Author, I_type, timestamp, Votes
 
@@ -63,8 +64,12 @@ def setMarkers(A_Issue):
 	#this will call getAllIssues and get the basic detials of all the issues and set the marker accordingly
 
 
-def setIssues(I_Id, U_Id, I_Author):
+def setI_Visible(I_Id, U_Id, I_Author):
 	#this shall suspend the issue all togther(Can only be done by the admin or the issue creator).
+	#still visible to the author though and not delete the issue from the table
 
-def set
+def isI_Visible( an array of I_Id):
+	# return true if visible else return false
+
+
 

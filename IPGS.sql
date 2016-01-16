@@ -11,32 +11,36 @@ CREATE TABLE Users(
 	/* 255 varchar takes 1 byte of data*/
 	 U_Id serial PRIMARY KEY,
 	 U_Email varchar(255) UNIQUE,
-	 U_Name varchar(255),
+	 U_Name varchar(255) NOT NULL,
 	 U_StrAdr varchar(255),
-	 U_City varchar(255),
-	 U_pincode varchar(255),
-	 U_Dob date
-	 
+	 U_City varchar(255) NOT NULL,
+	 U_pincode varchar(255) NOT NULL,
+	 U_Dob date NOT NULL,
+	 U_Admin boolean DEFAULT FALSE
+	 /*will grant the user super powers basicly cause mayhem at will. ONLY if set*/
+
 );
 
 CREATE TABLE Issues(
 	/*Issue ID,Issue Aurthor, Issue Title, Content, Latitude, Longitude, Anonymous Flag, Issue Type, Timestamp with timezone */
 	I_Id serial  PRIMARY KEY,
 	I_Author serial references Users(U_Id),
-	I_Title varchar(80),
-	I_Content text,
+	I_Title varchar(80) NOT NULL,
+	I_Content text NOT NULL,
 	/* 6decimal places give precision of 0.111 m, hence using real*/
-	I_Lat real,
-	I_Lng real,
+	I_Lat real NOT NULL,
+	I_Lng real NOT NULL,
 	/*C_Image image, Cant get this working now as I dont have that much 
 	knowledge. However I understood this much PSQL has support for 
 	Something called as blobs to store image ojects.
 	link:http://www.postgresql.org/docs/9.1/static/lo.html*/
-	I_AnonFlag boolean,
+	I_AnonFlag boolean DEFAULT FALSE,
 	/*0- non anonymous, 1- anonymous*/
-	I_Type int,
+	I_Type int NOT NULL,
 	/*Number to identify the type of complain*/
-	I_time timestamptz DEFAULT CURRENT_TIMESTAMP
+	I_time timestamptz DEFAULT CURRENT_TIMESTAMP,
+	I_Visible boolean DEFAULT FALSE
+	/*0- visible 1- NOT visible*/ 
 
 );
 
