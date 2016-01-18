@@ -1,0 +1,18 @@
+/*Value with all parameter in there*/
+
+INSERT INTO Users (U_Id,U_Email,U_Name, U_StrAdr,U_City, U_pincode, U_Dob, U_Admin)
+	    VALUES(0,'ac@gmail.com','dev',21,'mumbai',13131,'1-1-2012',false);
+
+/*values with parameter missing*/
+INSERT INTO Users(U_Email,U_Name, U_StrAdr,U_City, U_pincode, U_Dob, U_Admin) 
+           VALUES('aa22c@gmail.com','dqsv','21','mumbai',13131,'1-1-2012',false);
+
+/*Didn't give the blob value to I_Image and I_time,and I_Visible*/
+INSERT INTO Issues(I_Id,I_Author,I_Title,I_Content,I_Lat,I_Lng,I_AnonFlag,I_Type)
+	    VALUES(0,0,'Issue1','You are alive that is my biggest problem',21.123,1231.124,false,1);
+
+/*View table rows in DB*/
+SELECT * FROM Issues;
+SELECT * FROM Users;
+SELECT * FROM Votes;
+SELECT * FROM Comments;

@@ -46,12 +46,17 @@ def getAboutus():
 
 
 def getConnection():
+	conn = psycopg2.connect("dbname = IPGS")
+	return conn
 	#return a connection object
 	#return con 
 
 
 
-def getUserSatisfaction():
+def getUserSatisfaction(I_Id,conn):
+	c=conn.cursor()
+	likes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id && V_flag = true) AS likes  GROUP BY V_flag;")
+	dislikes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id && V_flag = false) AS likes  GROUP BY V_flag;")
 	#if totalvotes >
 	#
 
