@@ -17,7 +17,7 @@ CREATE TABLE Users(
 	 U_pincode varchar(255) NOT NULL,
 	 U_Dob date NOT NULL,
 	 U_Admin boolean DEFAULT FALSE
-	 /*will grant the user super powers basicly cause mayhem at will. ONLY if set*/
+	 /*will grant the user super powers basically cause mayhem at will. ONLY if set*/
 
 );
 
