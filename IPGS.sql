@@ -35,12 +35,12 @@ CREATE TABLE Issues(
 	Something called as blobs to store image ojects.
 	link:http://www.postgresql.org/docs/9.1/static/lo.html*/
 	I_AnonFlag boolean DEFAULT FALSE,
-	/*0- non anonymous, 1- anonymous*/
+	/*0,False- non anonymous, 1,True- anonymous*/
 	I_Type int NOT NULL,
 	/*Number to identify the type of complain*/
 	I_time timestamptz DEFAULT CURRENT_TIMESTAMP,
-	I_Visible boolean DEFAULT FALSE
-	/*0- visible 1- NOT visible*/ 
+	I_Visible boolean DEFAULT TRUE
+	/*True- visible false- NOT visible*/ 
 
 );
 
