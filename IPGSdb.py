@@ -49,26 +49,23 @@ def getAboutus():
 #Kind of understanding closures and decorators but what the heck!
 def getConnection(f):
 	def getConnectionInner(*args, **kwargs):
-		conn = psycopg2.connect("dbname = IPGS")
+		global conn
+		if not conn:
+			conn = psycopg2.connect("dbname = IPGS")
 		try:
     		rv = f(conn, *args, **kwargs)
     	except Exception, e:
-    		cnn.rollback()
+    		cnn.rollback() 
     		raise
-    	else:
+		else:
     		cnn.commit() # or maybe not
-    	finally:
-        	conn.close()
+		finally:
         	return rv
-
-    	return getConnectionInner
+		return getConnectionInner
 		#return a connection object
 	#return con 
 	return conn
     
-       
-
-
 @getConnection
 def getUserSatisfaction(I_Id):
 	c=conn.cursor()
@@ -87,27 +84,35 @@ def setMarkers(A_Issue):
 	#this will set markers on the map based on I_type
 	#this will call getAllIssues and get the basic detials of all the issues and set the marker accordingly
 
-
 def setI_Visible(I_Id, U_Id, I_Author):
 	#this shall suspend the issue all togther(Can only be done by the admin or the issue creator).
 	#still visible to the author though and not delete the issue from the table
 
 def isI_Visible( an array of I_Id):
 	# return true if visible else return false
+	#
 
 @getConnection
-def deleteComment(C_Id, C_SqNO):
+def deleteComment(C_Id, C_SqNo):
 	c=conn.cursor()
-	conn.commit()
-	c.close()
-	return 
+	try:
+		#pending
+		c.execute("DELETE FROM Comments WHERE C_Id=%s AND C_SqNo= %s",)
+		c.close()
+		return true
+	except Exception, e:
+		print "Exception in delete comment"
+	else:
+	return false
+
 	#This function will return true if the comment is deleted successfully else false
 
 def deleteIssue():
 	#This function will return true if the issue is deleted successfully else false
+	#
 
 def deleteVote():
 	#This function will return true if the vote is deleted successfully else false
-
+	#
 
 
