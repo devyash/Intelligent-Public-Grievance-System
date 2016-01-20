@@ -15,7 +15,7 @@ CREATE TABLE Users(
 	 U_StrAdr varchar(255),
 	 U_City varchar(255) NOT NULL,
 	 U_pincode varchar(255) NOT NULL,
-	 U_Dob date NOT NULL,
+	 U_Dob date,
 	 U_Admin boolean DEFAULT FALSE
 	 /*will grant the user super powers basically cause mayhem at will. ONLY if set*/
 
