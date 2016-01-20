@@ -12,6 +12,8 @@ CREATE TABLE Users(
 	 U_Id serial PRIMARY KEY,
 	 U_Email varchar(255) UNIQUE,
 	 U_Name varchar(255) NOT NULL,
+	 U_Gender boolean NOT NULL,
+	 /*False- Female, True - Male*/
 	 U_StrAdr varchar(255),
 	 U_City varchar(255) NOT NULL,
 	 U_pincode varchar(255) NOT NULL,
