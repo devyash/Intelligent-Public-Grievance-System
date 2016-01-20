@@ -2,6 +2,8 @@
 #
 #Major change update: forgot to add admin fucntions all togther.
 #
+import psycopg2
+
 def getNearbyIssues(lat, lng):
 	#within a given area lat (lat +1 mintue - 1 mintue as 1 minute is 1.8 kms ) 
 	#Select I_ID from Comments where (I_lat>lat-1 min & I_lat<lat+1 min)&&(I_lng>lng-1 min & I_lng<lng+1 min)
@@ -44,19 +46,36 @@ def getAboutus():
 	#Static page about the us
 	#
 
+#Kind of understanding closures and decorators but what the heck!
+def getConnection(f):
+	def getConnectionInner(*args, **kwargs):
+		conn = psycopg2.connect("dbname = IPGS")
+		try:
+    		rv = f(conn, *args, **kwargs)
+    	except Exception, e:
+    		cnn.rollback()
+    		raise
+    	else:
+    		cnn.commit() # or maybe not
+    	finally:
+        	conn.close()
+        	return rv
 
-def getConnection():
-	conn = psycopg2.connect("dbname = IPGS")
-	return conn
-	#return a connection object
+    	return getConnectionInner
+		#return a connection object
 	#return con 
+	return conn
+    
+       
 
 
-
-def getUserSatisfaction(I_Id,conn):
+@getConnection
+def getUserSatisfaction(I_Id):
 	c=conn.cursor()
 	likes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id AND V_flag = true) AS likes  GROUP BY V_flag;")
-	dislikes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id AND V_flag = false) AS dilikes  GROUP BY V_flag;")
+	dislikes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id AND V_flag = false) AS dislikes  GROUP BY V_flag;")
+	c.close()
+	return likes, dislikes
 	#if totalvotes >
 	#
 
@@ -75,6 +94,20 @@ def setI_Visible(I_Id, U_Id, I_Author):
 
 def isI_Visible( an array of I_Id):
 	# return true if visible else return false
+
+@getConnection
+def deleteComment(C_Id, C_SqNO):
+	c=conn.cursor()
+	conn.commit()
+	c.close()
+	return 
+	#This function will return true if the comment is deleted successfully else false
+
+def deleteIssue():
+	#This function will return true if the issue is deleted successfully else false
+
+def deleteVote():
+	#This function will return true if the vote is deleted successfully else false
 
 
 
