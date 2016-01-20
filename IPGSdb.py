@@ -56,7 +56,7 @@ def getConnection():
 def getUserSatisfaction(I_Id,conn):
 	c=conn.cursor()
 	likes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id AND V_flag = true) AS likes  GROUP BY V_flag;")
-	dislikes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id AND V_flag = false) AS likes  GROUP BY V_flag;")
+	dislikes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id AND V_flag = false) AS dilikes  GROUP BY V_flag;")
 	#if totalvotes >
 	#
 
