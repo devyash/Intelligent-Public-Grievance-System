@@ -9,7 +9,7 @@ def getNearbyIssues(lat, lng):
 
 def getAllIssues(array of I_Id):
 	#Call  if (isI_Visible(I_Id))=> true then proceed ahead else dont return that issue  
-	#return: a dictionary that will contain image,I_title,IssueID,votes(will call getvotes for this to return),I_lat,I_lng
+	#return: a dictionary that will contain image,I_title,IssueID,votes(will call getvotes for this to return),I_lat,I_lng,I_type WITHIN LIMIT 20(So the webpage doesn't hang
 	#A_Issue object
 
 def getIssues(I_Id): 
@@ -55,8 +55,8 @@ def getConnection():
 
 def getUserSatisfaction(I_Id,conn):
 	c=conn.cursor()
-	likes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id && V_flag = true) AS likes  GROUP BY V_flag;")
-	dislikes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id && V_flag = false) AS likes  GROUP BY V_flag;")
+	likes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id AND V_flag = true) AS likes  GROUP BY V_flag;")
+	dislikes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id AND V_flag = false) AS likes  GROUP BY V_flag;")
 	#if totalvotes >
 	#
 
