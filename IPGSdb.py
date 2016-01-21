@@ -4,6 +4,25 @@
 #
 import psycopg2
 
+def getConnection(f):
+	def getConnectionInner(*args, **kwargs):
+		global conn
+		if not conn:
+			conn = psycopg2.connect("dbname = IPGS")
+		try:
+    		rv = f(conn, *args, **kwargs)
+    	except Exception, e:
+    		cnn.rollback() 
+    		raise
+		else:
+    		cnn.commit() # or maybe not
+		finally:
+        	return rv
+		return getConnectionInner
+		#return a connection object
+	#return con 
+	return conn
+	
 def getNearbyIssues(lat, lng):
 	#within a given area lat (lat +1 mintue - 1 mintue as 1 minute is 1.8 kms ) 
 	#Select I_ID from Comments where (I_lat>lat-1 min & I_lat<lat+1 min)&&(I_lng>lng-1 min & I_lng<lng+1 min)
@@ -38,7 +57,15 @@ def setVote(U_Id,I_Id):
 	#if U_Id not present in votes for I_Id then vote
 	#Insert into votes
 
+@getConnection
 def getVote(I_Id):
+	c=conn.cursor()
+	c.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true) AS likes  GROUP BY V_flag;""",(I_Id,))
+	likes=c.fetchall()
+	c.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = false) AS dislikes  GROUP BY V_flag;""",(I_Id,))
+	dislikes=c.fetchall()
+	c.close()
+	return likes, dislikes
 	#return number of flags set for a I_ID
 	#count(*) from votes where I_Id=I_Id from Issues group by V_flag
 
@@ -47,33 +74,11 @@ def getAboutus():
 	#
 
 #Kind of understanding closures and decorators but what the heck!
-def getConnection(f):
-	def getConnectionInner(*args, **kwargs):
-		global conn
-		if not conn:
-			conn = psycopg2.connect("dbname = IPGS")
-		try:
-    		rv = f(conn, *args, **kwargs)
-    	except Exception, e:
-    		cnn.rollback() 
-    		raise
-		else:
-    		cnn.commit() # or maybe not
-		finally:
-        	return rv
-		return getConnectionInner
-		#return a connection object
-	#return con 
-	return conn
+
     
 @getConnection
 def getUserSatisfaction(I_Id):
-	c=conn.cursor()
-	likes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id AND V_flag = true) AS likes  GROUP BY V_flag;")
-	dislikes = c.execute("SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = I_Id AND V_flag = false) AS dislikes  GROUP BY V_flag;")
-	c.close()
-	return likes, dislikes
-	#if totalvotes >
+	#calls getvotes() and if likes > dislike returns likes/total votes
 	#
 
 def getMap():
@@ -84,20 +89,41 @@ def setMarkers(A_Issue):
 	#this will set markers on the map based on I_type
 	#this will call getAllIssues and get the basic detials of all the issues and set the marker accordingly
 
-def setI_Visible(I_Id, U_Id, I_Author):
+@getConnection
+def setI_Visible(I_Id, U_Id, I_Author,I_Visible):
 	#this shall suspend the issue all togther(Can only be done by the admin or the issue creator).
 	#still visible to the author though and not delete the issue from the table
+	#Returns true if the change was successful else returns false
+	c=conn.cursor()
+	try:
+		if U_Id = I_Author :
+		c.execute("""UPDATE Issues SET I_Visible= %s WHERE I_Id=%s""",(I_Visible,I_Id,))
+		c.close()
+		return true
+		else:
+			print "User ID and Author ID donot match. You do not have access to suspend this Issue."
+	except Exception, e:
+		print "Exception im setting the Issue Visibility"
+	else:
+	return false
 
-def isI_Visible( an array of I_Id):
+@getConnection
+def isI_Visible(I_Id):
 	# return true if visible else return false
-	#
-
+	c=conn.cursor()
+	try:
+		c.execute("""SELECT I_Visible FROM Issues WHERE I_Id=%s """,(I_Id,))
+		value = c.fetchone()
+		c.close()
+		return value
+	except Exception, e:
+		print "Exception in isI_Visible function "
+	
 @getConnection
 def deleteComment(C_Id, C_SqNo):
 	c=conn.cursor()
 	try:
-		#pending
-		c.execute("DELETE FROM Comments WHERE C_Id=%s AND C_SqNo= %s",)
+		c.execute("""DELETE FROM Comments WHERE C_Id=%s AND C_SqNo= %s""",(C_Id,C_SqNo,))
 		c.close()
 		return true
 	except Exception, e:
@@ -107,12 +133,31 @@ def deleteComment(C_Id, C_SqNo):
 
 	#This function will return true if the comment is deleted successfully else false
 
-def deleteIssue():
+@getConnection
+def deleteIssue(I_Id):
 	#This function will return true if the issue is deleted successfully else false
 	#
+	c=conn.cursor()
+	try:
+		c.execute("""DELETE FROM Issues WHERE I_Id=%s""",(I_Id,))
+		c.close()
+		return true
+	except Exception, e:
+		print "Exception in delete Issues"
+	else:
+	return false
 
-def deleteVote():
+@getConnection
+def deleteVote(V_IssueId, V_Author):
 	#This function will return true if the vote is deleted successfully else false
 	#
-
+	c=conn.cursor()
+	try:
+		c.execute("""DELETE FROM Comments WHERE V_IssueId=%s AND V_Author= %s""",(V_IssueId,V_Author,))
+		c.close()
+		return true
+	except Exception, e:
+		print "Exception in delete Vote"
+	else:
+	return false
 
