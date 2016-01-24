@@ -7,6 +7,7 @@ import psycopg2
 #CREATE PART OF THE CODE
 #--------------------------------------------------------------------------------------------------
 @readConnection
+#
 def createUsers(U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode,U_Dob):
 	c=conn.cursor()
 	c.execute("""INSERT INTO Users (U_Email,U_Name,U_Gender, U_StrAdr,U_City, U_Pincode, U_Dob)
@@ -156,6 +157,7 @@ def updatePassword():
 
 @readConnection
 def updateUsers():
+	# cannot update email,cannot update uid
 	c=conn.cursor()
 	c.close()
 	pass
