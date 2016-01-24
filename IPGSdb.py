@@ -7,6 +7,7 @@ import psycopg2
 #CREATE PART OF THE CODE
 #--------------------------------------------------------------------------------------------------
 @readConnection
+#
 def createUsers(U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode,U_Dob):
 	c=conn.cursor()
 	c.execute("""INSERT INTO Users (U_Email,U_Name,U_Gender, U_StrAdr,U_City, U_Pincode, U_Dob)
@@ -173,14 +174,26 @@ def updatePassword():
 	pass
 
 @readConnection
-def updateUsers():
+def updateUsers(U_Name,U_StrAdr,U_City,U_Pincode):
+	# cannot update email,cannot update uid
 	c=conn.cursor()
+	c.execute("""UPDATE Users SET U_Name=%s WHERE U_Name=%s""")#updates username
+	c.execute("""UPDATE Users SET U_StrAdr=%s WHERE U_StrAdr=%s""")#updates stradr
+	c.execute("""UPDATE Users SET U_City=%s WHERE U_City=%s""")#updates city
+	c.execute("""UPDATE Users SET U_Pincode=%s WHERE U_Pincode=%s""")#updates pincode
+	print "user details updated"
 	c.close()
 	pass
 
 @readConnection
 def updateIssues():
 	c=conn.cursor()
+	c.execute("""UPDATE Issues SET I_Content=%s WHERE I_Content=%s""")#updates issue content(not sure)
+	c.execute("""UPDATE Issues SET I_Image= WHERE I_Image= """)#no idea
+	if U_Name == I_Author
+		c.execute("""UPDATE Issues SET I_Visible=%s WHERE I_Visible=%s""")
+	else
+		print "cannot change visibility"
 	c.close()
 	pass
 
