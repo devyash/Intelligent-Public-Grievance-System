@@ -1,7 +1,7 @@
 /*Value with all parameter in there*/
 
-INSERT INTO Users (U_Id,U_Email,U_Name, U_StrAdr,U_City, U_pincode, U_Dob, U_Admin)
-	    VALUES(0,'ac@gmail.com','dev',21,'mumbai',13131,'1-1-2012',false);
+INSERT INTO Users (U_Id,U_Email,U_Name,U_Gender, U_StrAdr,U_City, U_pincode, U_Dob, U_Admin)
+	    VALUES(0,'ac@gmail.com','male','dev',21,'mumbai',13131,'1-1-2012',false);
 
 /*values with parameter missing*/
 INSERT INTO Users(U_Email,U_Name, U_StrAdr,U_City, U_pincode, U_Dob, U_Admin) 
@@ -16,3 +16,13 @@ SELECT * FROM Issues;
 SELECT * FROM Users;
 SELECT * FROM Votes;
 SELECT * FROM Comments;
+
+DROP TABLE Users Cascade;
+DROP TABLE Issues Cascade;
+DROP TABLE Votes Cascade;
+DROP TABLE Comments Cascade;
+DROP DATABASE IPGS;
+
+\i IPGS.sql
+
+'aa22c@gmail.com','dqsv','21','mumbai',13131,'1-1-2012'

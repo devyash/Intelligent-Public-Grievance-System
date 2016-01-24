@@ -4,7 +4,7 @@ Doubts as of now:
 1) not sure if the database overall uses the right design schema. Didn't make it totally normalized.(Not so sure :P)
 2)Implemeting Blobs in image storage(Issues Table)
 */
-
+CREATE DATABASE IPGS;
 
 CREATE TABLE Users(
 	/*User ID, email, name, street address, city, pincode,  date of birth*/
@@ -12,11 +12,10 @@ CREATE TABLE Users(
 	 U_Id serial PRIMARY KEY,
 	 U_Email varchar(255) UNIQUE,
 	 U_Name varchar(255) NOT NULL,
-	 U_Gender boolean NOT NULL,
-	 /*False- Female, True - Male*/
+	 U_Gender varchar(10) NOT NULL,
 	 U_StrAdr varchar(255),
 	 U_City varchar(255) NOT NULL,
-	 U_pincode varchar(255) NOT NULL,
+	 U_Pincode varchar(255) NOT NULL,
 	 U_Dob date,
 	 U_Admin boolean DEFAULT FALSE
 	 /*will grant the user super powers basically cause mayhem at will. ONLY if set*/
