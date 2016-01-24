@@ -42,18 +42,24 @@ def createVotes(I_Id,U_Id,V_Flag):
 	pass
 
 
+def createMarkers(A_Issue):
+	#this will set markers on the map based on I_type
+	#this will call readAllIssues and read the basic detials of all the issues and set the marker accordingly
+	pass
+
+
 #------------------------------------------------------------------------------------------------------
 #READ PART OF THE CODE
 #------------------------------------------------------------------------------------------------------
 
 def readUsers(U_Id):
+	#Function will return 2 values Likes and dislikes
 	c=conn.cursor()
 	c.execute("""SELECT U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_Dob, U_Admin FROM Users where U_Id = %s;""",(U_Id,))
 	likes=c.fetchall()
 	c.close()
 	return likes, dislikes
 	pass
-
 
 def readIssues(I_Id): 
 	#Displaying Everything we have on that issue
@@ -138,10 +144,6 @@ def readI_Visible(I_Id):
 	pass
 	
 
-def createMarkers(A_Issue):
-	#this will set markers on the map based on I_type
-	#this will call readAllIssues and read the basic detials of all the issues and set the marker accordingly
-	pass
 
 
 #-------------------------------------------------------------------------------------------------
@@ -201,7 +203,7 @@ def updateI_Visible(I_Id, U_Id, I_Author,I_Visible):
 #----------------------------------------------------------------------------------------------
 
 @readConnection
-def deleteIssue(I_Id):
+def deleteIssues(I_Id):
 	#This function will return true if the issue is deleted successfully else false
 	#
 	c=conn.cursor()
@@ -216,7 +218,7 @@ def deleteIssue(I_Id):
 	pass
 
 @readConnection
-def deleteVote(V_IssueId, V_Author):
+def deleteVotes(V_IssueId, V_Author):
 	#This function will return true if the vote is deleted successfully else false
 	#
 	c=conn.cursor()
@@ -231,7 +233,7 @@ def deleteVote(V_IssueId, V_Author):
 	pass
 
 @readConnection
-def deleteComment(C_Id, C_SqNo):
+def deleteComments(C_Id, C_SqNo):
 	c=conn.cursor()
 	try:
 		c.execute("""DELETE FROM Comments WHERE C_Id=%s AND C_SqNo= %s""",(C_Id,C_SqNo,))
