@@ -168,7 +168,7 @@ def updateUsers(U_Name,U_StrAdr,U_City,U_Pincode):
 	pass
 
 @readConnection
-def updateIssues():
+def updateIssues(I_Content,I_Image,I_Visible):
 	c=conn.cursor()
 	c.execute("""UPDATE Issues SET I_Content=%s WHERE I_Content=%s""")#updates issue content(not sure)
 	c.execute("""UPDATE Issues SET I_Image= WHERE I_Image= """)#no idea
@@ -180,14 +180,16 @@ def updateIssues():
 	pass
 
 @readConnection
-def updateComments():
+def updateComments(C_Content):
 	c=conn.cursor()
+	c.execute("""UPDATE Comments SET C_Content=%s WHERE C_Content=%s""")
 	c.close()
 	pass
 
 @readConnection
 def updateVotes():
 	c=conn.cursor()
+	c.execute("""SELECT V_IssueId,count (*) as num from Votes group by V_IssueId order by num desc """)
 	c.close()
 	pass
 
