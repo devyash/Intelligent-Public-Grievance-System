@@ -49,27 +49,38 @@ def createMarkers(A_Issue):
 
 
 #------------------------------------------------------------------------------------------------------
-#READ PART OF THE CODE
+#READ/DISPLAY PART OF THE CODE
 #------------------------------------------------------------------------------------------------------
 
+@readConnection
 def readUsers(U_Id):
-	#Function will return 2 values Likes and dislikes
+	#Returns the details of the User in a dictionary as UserDetail
 	c=conn.cursor()
-	c.execute("""SELECT U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_Dob, U_Admin FROM Users where U_Id = %s;""",(U_Id,))
-	likes=c.fetchall()
+	c.execute("""SELECT U_Id, U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_Dob, U_Admin FROM Users where U_Id = %s;""",(U_Id,))
+	row = c.fetchone()
+	UserDetail = ( {'U_Id': str(row[0]), 'U_Email': str(row[1]), 'I_Name': str(row[2]),'I_Gender': str(row[3]),'U_StrAdr': str(row[4]),'U_City': str(row[5]),'U_Pincode': str(row[6]),'U_Dob': str(row[7]),'U_Admin': str(row[8]) } )
 	c.close()
-	return likes, dislikes
+	return UserDetail
 	pass
 
+@getConnection
 def readIssues(I_Id): 
 	#Displaying Everything we have on that issue
-	#Check if the I_AnonFlag is set, if it is set then dont return aut hor of the issue
-	#return lat, lng, title, content, image, Author, I_type, timestamp, Votes
+	#NOTE:Before calling this method Check if the I_AnonFlag is set, if it is set then dont return author of the issue
+	#return a dictonary which contains I_Id, I_Author, I_Title, I_Content, I_Lat, I_Lng, I_Image, I_AnonFlag, I_Type, I_time 
+	c.execute("""SELECT I_Id, I_Author, I_Title, I_Content, I_Lat, I_Lng, I_Image, I_AnonFlag, I_Type, I_time, I_Image FROM Issues WHERE I_Id= %s);""",(I_Id,))
+	row = c.fetchone() 
+	IssuesDetail = ({'I_Id': str(row[0]), 'I_Author': str(row[1]),'I_Title': str(row[2]),'I_Content': str(row[3]),'I_Lat': str(row[4]),'I_Lng': str(row[5]),'I_AnonFlag': str(row[6]),'I_Type': str(row[7]),'I_time': str(row[8]),'I_Image':str(row[9])} )
+	return IssueDetail
 	pass
 
+@getConnection
 def readComments(I_Id):
-	#Display all the comments presented by the user.
-	#return
+	#Display all the comments on an Issue.
+	#returns a list of dictionary containing all the comments on that Issues
+	c.execute("""SELECT C_Author, C_Content, C_time, C_Id, C_SqNo FROM Comments WHERE C_Id= %s ORDER BY C_SqNo);""",(I_Id,)) 
+	CommentDetail = ({'C_Author': str(row[0]), 'C_Content': str(row[1]),'C_time': str(row[2]),'C_Id': str(row[3]),'C_SqNo': str(row[4])} for row in c.fetchall() )
+	return CommentDetail
 	pass
 
 @readConnection
@@ -88,24 +99,23 @@ def readVotes(I_Id):
 def readNearbyIssues(lat, lng):
 	#within a given area lat (lat +1 mintue - 1 mintue as 1 minute is 1.8 kms ) 
 	#Select I_ID from Comments where (I_lat>lat-1 min & I_lat<lat+1 min)&&(I_lng>lng-1 min & I_lng<lng+1 min)
-	#return array OF Issue ID
-
+	#return List of Issue ID list_I_Id
 	pass
 
 
 @readConnection
-def readAllIssues(I_Ids):
+def readAllIssues(list_I_Id):
 	#I_Ids is a array of issue I_Id
 	#Call  if (isI_Visible(I_Id))=> true then proceed ahead else dont return that issue  
 	#return: a dictionary that will contain image,I_title,IssueID,votes(will call readvotes for this to return),I_lat,I_lng,I_type WITHIN LIMIT 20(So the webpage doesn't hang
 	#A_Issue dictionary
-
 	c=conn.cursor() 
-	for i in I_Ids:
+	for i in list_I_Id:
 		if(readI_Visible(i)):
-			c.execute("""SELECT I_Id, I_Author, I_Title, I_Content, I_Lat, I_Lng, I_Image, I_AnonFlag, I_Type, I_time FROM Issues WHERE I_Id= %s),(i,);""")
-			A_Issues[i] = ({'I_Id': str(row[0]), 'I_Author': str(row[1]),'I_Title': str(row[2]),'I_Content': str(row[3]),'I_Lat': str(row[4]),'I_Lng': str(row[5]),'I_AnonFlag': str(row[6]),'I_Type': str(row[7]),'I_time': str(row[8])}, c.fetchone())
-		pass
+			c.execute("""SELECT I_Id, I_Title, I_Lat, I_Lng, I_Image, I_Type  FROM Issues WHERE I_Id= %s LIMIT 20);""",(I_Id,))
+	row = c.fetchone() 
+	IssuesDetail = ({'I_Id': str(row[0]), 'I_Title': str(row[1]),'I_Lat': str(row[2]),'I_Lng': str(row[3]),'I_Image': str(row[4]),'I_Lng': str(row[5]),'I_AnonFlag': str(row[6]),'I_Type': str(row[7]),'I_time': str(row[8])} )
+			
 	return A_Issues
 
 
@@ -142,7 +152,12 @@ def readI_Visible(I_Id):
 	except Exception, e:
 		print "Exception in isI_Visible function "
 	pass
-	
+
+@readConnection
+def readAnonFlag():
+	#returns true if the anonymous flag is not set
+	#returns false if the anonymous flag is set=> Make the Issue annonymous  
+	pass	
 
 
 
