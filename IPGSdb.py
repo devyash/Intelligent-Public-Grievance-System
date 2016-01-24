@@ -7,7 +7,6 @@ import psycopg2
 #CREATE PART OF THE CODE
 #--------------------------------------------------------------------------------------------------
 @readConnection
-#
 def createUsers(U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode,U_Dob):
 	c=conn.cursor()
 	c.execute("""INSERT INTO Users (U_Email,U_Name,U_Gender, U_StrAdr,U_City, U_Pincode, U_Dob)
@@ -87,45 +86,56 @@ def readComments(I_Id):
 @readConnection
 def readVotes(I_Id):
 	c=conn.cursor()
-	c.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true) AS likes  GROUP BY V_flag;""",(I_Id,))
-	likes=c.fetchall()
-	c.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = false) AS dislikes  GROUP BY V_flag;""",(I_Id,))
-	dislikes=c.fetchall()
-	c.close()
-	return likes, dislikes
+	c.execute("""SELECT 1 FROM Votes WHERE V_IssueId=%s;""",(I_Id,))
+	if(c.fetchone())
+		c.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true) AS likes  GROUP BY V_flag;""",(I_Id,))
+		likes=c.fetchall()
+		c.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = false) AS dislikes  GROUP BY V_flag;""",(I_Id,))
+		dislikes=c.fetchall()
+		c.close()
+		return (likes, dislikes)
+	else
+		print"Issue doesnt have any votes"
+		return (None,None)
+
 	#return number of flags set for a I_ID
 	#count(*) from votes where I_Id=I_Id from Issues group by V_flag
 	pass
 	
-def readNearbyIssues(lat, lng):
-	#within a given area lat (lat +1 mintue - 1 mintue as 1 minute is 1.8 kms ) 
-	#Select I_ID from Comments where (I_lat>lat-1 min & I_lat<lat+1 min)&&(I_lng>lng-1 min & I_lng<lng+1 min)
-	#return List of Issue ID list_I_Id
-	pass
-
 
 @readConnection
 def readAllIssues(list_I_Id):
 	#I_Ids is a array of issue I_Id
 	#Call  if (isI_Visible(I_Id))=> true then proceed ahead else dont return that issue  
-	#return: a dictionary that will contain image,I_title,IssueID,votes(will call readvotes for this to return),I_lat,I_lng,I_type WITHIN LIMIT 20(So the webpage doesn't hang
-	#A_Issue dictionary
+	#return: array of dictionary objects that will contain image,I_title,IssueID,votes(will call readvotes for this to return),I_lat,I_lng,I_type WITHIN LIMIT 20(So the webpage doesn't hang
+	#A_Issue is an array of dictionary
 	c=conn.cursor() 
 	for i in list_I_Id:
-		if(readI_Visible(i)):
-			c.execute("""SELECT I_Id, I_Title, I_Lat, I_Lng, I_Image, I_Type  FROM Issues WHERE I_Id= %s LIMIT 20);""",(I_Id,))
-	row = c.fetchone() 
-	IssuesDetail = ({'I_Id': str(row[0]), 'I_Title': str(row[1]),'I_Lat': str(row[2]),'I_Lng': str(row[3]),'I_Image': str(row[4]),'I_Lng': str(row[5]),'I_AnonFlag': str(row[6]),'I_Type': str(row[7]),'I_time': str(row[8])} )
-			
+		if(isI_Visible(i)):
+			c.execute("""SELECT I_Id, I_Title, I_Lat, I_Lng, I_Image, I_Type  FROM Issues WHERE I_Id= %s LIMIT 20);""",(I_Id,)) 
+			row=c.fetchone()
+			A_Issues[i] = ({'I_Id': str(row[0]), 'I_Title': str(row[1]),'I_Lat': str(row[2]),'I_Lng': str(row[3]),'I_Image': str(row[4]),'I_Type': str(row[5])})
+			pass
+	#ERROR IN THE CODE HERE DONT KNOW HOW TO DO IT, WILL HAVE TO LEARN PYTHON
 	return A_Issues
 
 
+@readConnection
 def readMyIssues(U_Id):
 	#this fuction will return a list of I_Id which have author as U_Id passed
-	#return dictionary
+	#return an array list_I_Id
+	c=conn.cursor()
+	c.execute("""SELECT I_Id FROM Issues where I_Author = %s;""",(U_Id,))
+	list_I_Id  = c.fetchall()
+	c.close()
+	return list_I_Id
 	pass 
 
-
+def readNearbyIssues(lat, lng):
+	#within a given area lat (lat +1 mintue - 1 mintue as 1 minute is 1.8 kms ) 
+	#Select I_ID from Comments where (I_lat>lat-1 min & I_lat<lat+1 min)&&(I_lng>lng-1 min & I_lng<lng+1 min)
+	#return List of Issue ID list_I_Id
+	pass
 
 def readAboutus():
 	#Static page about the us
@@ -133,7 +143,19 @@ def readAboutus():
 
 @readConnection
 def readUserSatisfaction(I_Id):
-	#calls readvotes() and if likes > dislike returns likes/total votes
+	#returns the satisfaction in a percentage
+	satis=readVotes(I_Id)
+	if(satis[0]>satis[1]):
+		print"Users are happy"
+		return satisfactionpercentage= ((float(satis[0])/(satis[0]+satis[1]))*100)
+		
+	elif(satis[0]<satis[1]):
+		print"Users are unhappy"
+		return satisfactionpercentage= ((float(satis[1])/(satis[0]+satis[1]))*100)
+
+	elif(satis[0]=satis[1]):
+		print"Users are neither happy nor satisfied"
+		return 50.0
 	pass
 
 def readMap():
@@ -141,8 +163,11 @@ def readMap():
 	#this will be in a div tag within a box
 	pass
 
+#---------------------------------------------------------------------------------------------------
+#CODE THAT CHECKS IF CERTAIN ROWS ARE THERE IN DATABASE OR NOT
+#---------------------------------------------------------------------------------------------------
 @readConnection
-def readI_Visible(I_Id):
+def isI_Visible(I_Id):
 	# return true if visible else return false
 	c=conn.cursor()
 	try:
@@ -151,15 +176,30 @@ def readI_Visible(I_Id):
 		c.close()
 		return value
 	except Exception, e:
-		print "Exception in readI_Visible function "
+		print "Exception in isI_Visible function "
 	pass
 
 @readConnection
-def readI_AnonFlag():
+def isI_AnonFlag():
 	
 	#returns true if the anonymous flag is not set
 	#returns false if the anonymous flag is set=> Make the Issue anonymous  
 	pass	
+
+@readConnection
+def isI_Id(I_Id):
+	#
+	#
+
+@readConnection
+def isU_Id(U_Id):
+	pass
+
+@readConnection
+def isComments(C_Id,C_SqNo):
+	pass
+
+
 
 
 
@@ -297,12 +337,6 @@ def readConnection(f):
         return rv
 
     return readConnectionInner
-
-
-
-
-
-
 
 
 
