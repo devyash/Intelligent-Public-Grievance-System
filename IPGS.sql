@@ -31,7 +31,8 @@ CREATE TABLE Issues(
 	/* 6decimal places give precision of 0.111 m, hence using real*/
 	I_Lat real NOT NULL,
 	I_Lng real NOT NULL,
-	I_Image bytea,
+	I_Image varchar(255),
+	/*image will be stored in a url for now*/
 	/*C_Image image, Cant get this working now as I dont have that much 
 	knowledge. However I understood this much PSQL has support for 
 	Something called as blobs to store image ojects.
@@ -54,17 +55,17 @@ CREATE TABLE Comments(
 	C_time timestamptz DEFAULT CURRENT_TIMESTAMP,
 	C_Id serial references Issues(I_Id),
 	C_SqNo serial,
-	PRIMARY KEY (C_Id, C_SqNo)
+	PRIMARY KEY (C_Author,C_Id, C_SqNo)
 	
 
 
 );
 
 CREATE TABLE Votes(
-	V_IssueId serial PRIMARY KEY references Issues(I_Id),
+	V_IssueId serial references Issues(I_Id),
 	V_Author serial references Users(U_Id),
 	V_Flag boolean,
 	/*false-Dislike true- Like*/
 	V_time timestamptz DEFAULT CURRENT_TIMESTAMP
-
+	PRIMARY KEY(V_IssueId,V_Author)
 );
