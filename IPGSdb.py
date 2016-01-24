@@ -150,13 +150,14 @@ def readI_Visible(I_Id):
 		c.close()
 		return value
 	except Exception, e:
-		print "Exception in isI_Visible function "
+		print "Exception in readI_Visible function "
 	pass
 
 @readConnection
-def readAnonFlag():
+def readI_AnonFlag():
+	
 	#returns true if the anonymous flag is not set
-	#returns false if the anonymous flag is set=> Make the Issue annonymous  
+	#returns false if the anonymous flag is set=> Make the Issue anonymous  
 	pass	
 
 
@@ -249,6 +250,7 @@ def deleteVotes(V_IssueId, V_Author):
 
 @readConnection
 def deleteComments(C_Id, C_SqNo):
+	#This function will return true if the comment is deleted successfully else false
 	c=conn.cursor()
 	try:
 		c.execute("""DELETE FROM Comments WHERE C_Id=%s AND C_SqNo= %s""",(C_Id,C_SqNo,))
@@ -259,9 +261,7 @@ def deleteComments(C_Id, C_SqNo):
 	else:
 		return false
 	pass
-
-	#This function will return true if the comment is deleted successfully else false
-
+	
 #------------------------------------------------------------------------------------------
 #OTHER FUNCTIONS 
 #------------------------------------------------------------------------------------------
