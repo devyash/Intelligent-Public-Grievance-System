@@ -1,10 +1,50 @@
 #Listing all the functions that this webapp might require
 #
 #Major change update: forgot to add admin fucntions all togther.
-#
 import psycopg2
+
+#------------------------------------------------------------------------------------------
+#OTHER FUNCTIONS 
+#------------------------------------------------------------------------------------------
+
+#Kind of understanding closures and decorators but what the heck!
+def readConnection(f):
+    def readConnectionInner(*args, **kwargs):
+        # or use a pool, or a factory function...
+        conn = psycopg2.connect("dbname = IPGS")
+        try:
+            rv = f(conn, *args, **kwargs)
+        except Exception, e:
+            conn.rollback()
+            raise
+        else:
+            conn.commit() # or maybe not
+        finally:
+            conn.close()
+
+        return rv
+
+    return readConnectionInner
+    def readConnectionInner(*args, **kwargs):
+        # or use a pool, or a factory function...
+        conn = psycopg2.connect("dbname = IPGS")
+        try:
+            rv = f(conn, *args, **kwargs)
+        except Exception, e:
+            conn.rollback()
+            raise
+        else:
+            conn.commit() # or maybe not
+        finally:
+            conn.close()
+
+        return rv
+
+    return readConnectionInner
+
+
 #--------------------------------------------------------------------------------------------------
-#CREATE PART OF THE CODE
+#CREATE  FUNCTIONS PART OF THE CODE
 #--------------------------------------------------------------------------------------------------
 @readConnection
 def createUsers(U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode,U_Dob):
@@ -49,7 +89,7 @@ def createMarkers(A_Issue):
 
 
 #------------------------------------------------------------------------------------------------------
-#READ/DISPLAY PART OF THE CODE
+#READ/DISPLAY FUNCTIONS PART OF THE CODE
 #------------------------------------------------------------------------------------------------------
 
 @readConnection
@@ -63,7 +103,7 @@ def readUsers(U_Id):
 	return UserDetail
 	pass
 
-@getConnection
+@readConnection
 def readIssues(I_Id): 
 	#Displaying Everything we have on that issue
 	#NOTE:Before calling this method Check if the I_AnonFlag is set, if it is set then dont return author of the issue
@@ -74,7 +114,7 @@ def readIssues(I_Id):
 	return IssueDetail
 	pass
 
-@getConnection
+@readConnection
 def readComments(I_Id):
 	#Display all the comments on an Issue.
 	#returns a list of dictionary containing all the comments on that Issues
@@ -86,15 +126,14 @@ def readComments(I_Id):
 @readConnection
 def readVotes(I_Id):
 	c=conn.cursor()
-	c.execute("""SELECT 1 FROM Votes WHERE V_IssueId=%s;""",(I_Id,))
-	if(c.fetchone())
+	if(isI_Id):
 		c.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true) AS likes  GROUP BY V_flag;""",(I_Id,))
 		likes=c.fetchall()
 		c.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = false) AS dislikes  GROUP BY V_flag;""",(I_Id,))
 		dislikes=c.fetchall()
 		c.close()
 		return (likes, dislikes)
-	else
+	else:
 		print"Issue doesnt have any votes"
 		return (None,None)
 
@@ -102,7 +141,6 @@ def readVotes(I_Id):
 	#count(*) from votes where I_Id=I_Id from Issues group by V_flag
 	pass
 	
-
 @readConnection
 def readAllIssues(list_I_Id):
 	#I_Ids is a array of issue I_Id
@@ -119,7 +157,6 @@ def readAllIssues(list_I_Id):
 	#ERROR IN THE CODE HERE DONT KNOW HOW TO DO IT, WILL HAVE TO LEARN PYTHON
 	return A_Issues
 
-
 @readConnection
 def readMyIssues(U_Id):
 	#this fuction will return a list of I_Id which have author as U_Id passed
@@ -131,6 +168,24 @@ def readMyIssues(U_Id):
 	return list_I_Id
 	pass 
 
+@readConnection
+def readUserSatisfaction(I_Id):
+	#returns the satisfaction in a percentage
+	satis=readVotes(I_Id)
+	if(satis[0]>satis[1]):
+		print"Users are happy"
+		satisfactionpercentage = ((float(satis[0])/(satis[0]+satis[1]))*100)
+
+	elif(satis[0]<satis[1]):
+		print"Users are unhappy"
+		satisfactionpercentage = ((float(satis[1])/(satis[0]+satis[1]))*100)
+
+	elif(satis[0]==satis[1]):
+		print"Users are neither happy nor satisfied"
+		satisfactionpercentage = 50.0
+	return satisfactionpercentage
+	pass
+
 def readNearbyIssues(lat, lng):
 	#within a given area lat (lat +1 mintue - 1 mintue as 1 minute is 1.8 kms ) 
 	#Select I_ID from Comments where (I_lat>lat-1 min & I_lat<lat+1 min)&&(I_lng>lng-1 min & I_lng<lng+1 min)
@@ -139,23 +194,6 @@ def readNearbyIssues(lat, lng):
 
 def readAboutus():
 	#Static page about the us
-	pass
-
-@readConnection
-def readUserSatisfaction(I_Id):
-	#returns the satisfaction in a percentage
-	satis=readVotes(I_Id)
-	if(satis[0]>satis[1]):
-		print"Users are happy"
-		return satisfactionpercentage= ((float(satis[0])/(satis[0]+satis[1]))*100)
-		
-	elif(satis[0]<satis[1]):
-		print"Users are unhappy"
-		return satisfactionpercentage= ((float(satis[1])/(satis[0]+satis[1]))*100)
-
-	elif(satis[0]=satis[1]):
-		print"Users are neither happy nor satisfied"
-		return 50.0
 	pass
 
 def readMap():
@@ -170,107 +208,143 @@ def readMap():
 def isI_Visible(I_Id):
 	# return true if visible else return false
 	c=conn.cursor()
-	try:
-		c.execute("""SELECT I_Visible FROM Issues WHERE I_Id=%s """,(I_Id,))
-		value = c.fetchone()
-		c.close()
-		return value
-	except Exception, e:
-		print "Exception in isI_Visible function "
-	pass
-
-@readConnection
-def isI_AnonFlag():
+	c.execute("""SELECT I_Visible FROM Issues WHERE I_Id=%s """,(I_Id,))
+	value = c.fetchone()
+	c.close()
+	return value
 	
-	#returns true if the anonymous flag is not set
-	#returns false if the anonymous flag is set=> Make the Issue anonymous  
-	pass	
-
+@readConnection
+def isI_AnonFlag(I_Id):
+	#returns FALSE if the anonymous flag is not set
+	#returns TRUE if the anonymous flag is set=> Make the Issue anonymous  
+	c=conn.cursor()
+	c.execute("""SELECT I_AnonFlag FROM Issues WHERE I_Id=%s """,(I_Id,))
+	I_AnonFlag- c.fetchone()
+	c.close()
+	return I_AnonFlag
+	
 @readConnection
 def isI_Id(I_Id):
-	#
-	#
+	c=conn.cursor()
+	c.execute("""SELECT I_AnonFlag FROM Issues WHERE I_Id=%s """,(I_Id,))
+	I_AnonFlag- c.fetchone()
+	c.close()
+	return I_AnonFlag
 
 @readConnection
 def isU_Id(U_Id):
+	#Returns true if U_Id exists in the Users table
+	c=conn.cursor()
+	c.execute("""SELECT 1 FROM Users WHERE U_Id=%s """,(U_Id,))
+	if (c.fetchone()):
+		return True
+	else:
+		return False
+
+	c.close()
 	pass
 
 @readConnection
-def isComments(C_Id,C_SqNo):
+def isComments(C_Author,C_Id,C_SqNo):
+	c=conn.cursor()
+	c.execute("""SELECT 1 FROM Users WHERE C_Author=%s AND C_Id=%s AND C_SqNo """,(C_Author,C_Id,C_SqNo))
+	if (c.fetchone()):
+		return True
+	else:
+		return False
+
+	c.close()
 	pass
-
-
-
-
-
 #-------------------------------------------------------------------------------------------------
-#UPDATE PART OF THE API
+#UPDATE FUNCTIONS PART OF THE API
 #-------------------------------------------------------------------------------------------------
 
 @readConnection
-def updatePassword():
+def updatePassword(U_Id):
 	c=conn.cursor()
 	c.close()
 	pass
 
 @readConnection
-def updateUsers(U_Name,U_StrAdr,U_City,U_Pincode):
+def updateUsers(U_Id,U_Name=None,U_Gender=None,U_StrAdr=None,U_City=None,U_Pincode=None,U_Dob=None):
 	# cannot update email,cannot update uid
+	#Pass None in the variables you dont want ro update
+	#BUG:DOES NOT TELL IF THE CONTENT IS NOT UPDATE/ERROR
 	c=conn.cursor()
-	c.execute("""UPDATE Users SET U_Name=%s WHERE U_Name=%s""")#updates username
-	c.execute("""UPDATE Users SET U_StrAdr=%s WHERE U_StrAdr=%s""")#updates stradr
-	c.execute("""UPDATE Users SET U_City=%s WHERE U_City=%s""")#updates city
-	c.execute("""UPDATE Users SET U_Pincode=%s WHERE U_Pincode=%s""")#updates pincode
-	print "user details updated"
+	if U_Id: 
+		if 'U_Name' in locals():
+			c.execute("""UPDATE Users SET U_Name=%s WHERE U_Id=%s;""",(U_Name,U_Id,))
+		if 'U_Gender' in locals():
+			c.execute("""UPDATE Users SET U_Gender=%s WHERE U_Id=%s;""",(U_Gender,U_Id,))
+		if 'U_StrAdr' in locals():
+			c.execute("""UPDATE Users SET U_City=%s WHERE U_Id=%s;""",(U_City,U_Id,))
+		if 'U_City' in locals():
+			c.execute("""UPDATE Users SET U_Pincode=%s WHERE U_Id=%s;""",(U_Pincode,U_Id,))
+		if 'U_Pincode' in locals():
+			c.execute("""UPDATE Users SET U_Dob=%s WHERE U_Id=%s;""",(U_Dob,U_Id,))
+		print "user details updated"
 	c.close()
 	pass
 
 @readConnection
-def updateIssues(I_Content,I_Image,I_Visible):
+def updateIssues(I_Id,I_Title=None,I_Content=None,I_Lat=None,I_Lng=None,I_Image=None,I_AnonFlag=None,I_Type=None,I_Visible=None):
+	#BUG:DOES NOT TELL IF THE CONTENT IS NOT UPDATE/ERROR
 	c=conn.cursor()
-	c.execute("""UPDATE Issues SET I_Content=%s WHERE I_Content=%s""")#updates issue content(not sure)
-	c.execute("""UPDATE Issues SET I_Image= WHERE I_Image= """)#no idea
-	if U_Name == I_Author
-		c.execute("""UPDATE Issues SET I_Visible=%s WHERE I_Visible=%s""")
-	else
-		print "cannot change visibility"
+	if 'I_Title' in locals():
+		c.execute("""UPDATE Issues SET I_Title=%s WHERE I_Id=%s;""",(I_title,I_Id,))
+	if 'I_Content' in locals():
+		c.execute("""UPDATE Issues SET I_Content=%s WHERE I_Id=%s;""",(I_Content,I_Id,))
+	if 'I_Lat' in locals():
+		c.execute("""UPDATE Issues SET I_Lat=%s WHERE I_Id=%s;""",(I_Lat,I_Id,))
+	if 'I_Lng' in locals():
+		c.execute("""UPDATE Issues SET I_Lng=%s WHERE I_Id=%s;""",(I_Lng,I_Id,))
+	if 'I_Image' in locals():
+		c.execute("""UPDATE Issues SET I_Image=%s WHERE I_Id=%s;""",(I_Image,I_Id,))
+	if 'I_AnonFlag' in locals():
+		c.execute("""UPDATE Issues SET I_AnonFlag=%s WHERE I_Id=%s;""",(I_AnonFlag,I_Id,))
+	if 'I_Type' in locals():
+		c.execute("""UPDATE Issues SET I_Type=%s WHERE I_Id=%s;""",(I_Type,I_Id,))
+	if 'I_Visible' in locals():
+		c.execute("""UPDATE Issues SET I_Visible=%s WHERE I_Id=%s;""",(I_Visible,I_Id,))
+	print()
 	c.close()
 	pass
 
 @readConnection
-def updateComments(C_Content):
+def updateComments(C_Author,C_Id,C_SqNo,C_Content=None):
 	c=conn.cursor()
-	c.execute("""UPDATE Comments SET C_Content=%s WHERE C_Content=%s""")
+	if 'C_Content' in locals():
+		c.execute("""UPDATE Comments SET C_Content=%s WHERE C_Author=%s AND C_Id= %s AND C_SqNo =%s""",(C_Content,C_Author,C_Id,C_SqNo,))
 	c.close()
 	pass
 
 @readConnection
-def updateVotes():
+def updateVotes(V_IssueId,V_Author,V_Flag):
 	c=conn.cursor()
-	c.execute("""SELECT V_IssueId,count (*) as num from Votes group by V_IssueId order by num desc """)
+	c.execute("""UPDATE Votes SET V_Flag=%s WHERE V_IssueId=%s AND V_Author= %s""",(V_IssueId,V_Author,V_Flag,))
 	c.close()
 	pass
 
-@readConnection
-def updateI_Visible(I_Id, U_Id, I_Author,I_Visible):
+#@readConnection
+#def updateI_Visible(I_Id, U_Id, I_Author,I_Visible):
 	#this shall suspend the issue all togther(Can only be done by the admin or the issue creator).
 	#still visible to the author though and not delete the issue from the table
 	#Returns true if the change was successful else returns false
-	c=conn.cursor()
-	try:
-		if U_Id == I_Author :
-			c.execute("""UPDATE Issues SET I_Visible=%s WHERE I_Id=%s""",(I_Visible,I_Id,))
-			c.close()
-			return true
-		else:
-			print "User ID and Author ID donot match. You do not have access to suspend this Issue."
-	except Exception, e:
-		print "Exception in setting the Issue Visibility"
-	else:
-		return false
+#	c=conn.cursor()
+#	try:
+		#if U_Id == I_Author :
+		#	c.execute("""UPDATE Issues SET I_Visible=%s WHERE I_Id=%s""",(I_Visible,I_Id,))
+		#	c.close()
+		#	return true
+		#else:
+		#	print "User ID and Author ID donot match. You do not have access to suspend this Issue."
+	#except Exception, e:
+	#	print "Exception in setting the Issue Visibility"
+	#else:
+	#	return false
 
 #----------------------------------------------------------------------------------------------
-#DELETE PART OF THE CODE
+#DELETE FUNCTIONS PART OF THE CODE
 #----------------------------------------------------------------------------------------------
 
 @readConnection
@@ -317,28 +391,6 @@ def deleteComments(C_Id, C_SqNo):
 		return false
 	pass
 	
-#------------------------------------------------------------------------------------------
-#OTHER FUNCTIONS 
-#------------------------------------------------------------------------------------------
-
-#Kind of understanding closures and decorators but what the heck!
-def readConnection(f):
-    def readConnectionInner(*args, **kwargs):
-        # or use a pool, or a factory function...
-        conn = psycopg2.connect("dbname = IPGS")
-        try:
-            rv = f(conn, *args, **kwargs)
-        except Exception, e:
-            conn.rollback()
-            raise
-        else:
-            conn.commit() # or maybe not
-        finally:
-            conn.close()
-
-        return rv
-
-    return readConnectionInner
 
 
 

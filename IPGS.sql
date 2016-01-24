@@ -55,17 +55,17 @@ CREATE TABLE Comments(
 	C_time timestamptz DEFAULT CURRENT_TIMESTAMP,
 	C_Id serial references Issues(I_Id),
 	C_SqNo serial,
-	PRIMARY KEY (C_Id, C_SqNo)
+	PRIMARY KEY (C_Author,C_Id, C_SqNo)
 	
 
 
 );
 
 CREATE TABLE Votes(
-	V_IssueId serial PRIMARY KEY references Issues(I_Id),
+	V_IssueId serial references Issues(I_Id),
 	V_Author serial references Users(U_Id),
 	V_Flag boolean,
 	/*false-Dislike true- Like*/
 	V_time timestamptz DEFAULT CURRENT_TIMESTAMP
-
+	PRIMARY KEY(V_IssueId,V_Author)
 );
