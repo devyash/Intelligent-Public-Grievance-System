@@ -4,6 +4,12 @@ Doubts as of now:
 1) not sure if the database overall uses the right design schema. Didn't make it totally normalized.(Not so sure :P)
 2)Implemeting Blobs in image storage(Issues Table)
 */
+DROP TABLE IF EXISTS Users Cascade ;
+DROP TABLE IF EXISTS Issues Cascade;
+DROP TABLE IF EXISTS Votes Cascade;
+DROP TABLE IF EXISTS Comments Cascade;
+DROP database IF EXISTS IPGS;
+
 CREATE DATABASE IPGS;
 
 CREATE TABLE Users(
@@ -66,6 +72,6 @@ CREATE TABLE Votes(
 	V_Author serial references Users(U_Id),
 	V_Flag boolean,
 	/*false-Dislike true- Like*/
-	V_time timestamptz DEFAULT CURRENT_TIMESTAMP
+	V_time timestamptz DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(V_IssueId,V_Author)
 );

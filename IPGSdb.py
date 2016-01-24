@@ -25,35 +25,17 @@ def readConnection(f):
         return rv
 
     return readConnectionInner
-    def readConnectionInner(*args, **kwargs):
-        # or use a pool, or a factory function...
-        conn = psycopg2.connect("dbname = IPGS")
-        try:
-            rv = f(conn, *args, **kwargs)
-        except Exception, e:
-            conn.rollback()
-            raise
-        else:
-            conn.commit() # or maybe not
-        finally:
-            conn.close()
-
-        return rv
-
-    return readConnectionInner
-
 
 #--------------------------------------------------------------------------------------------------
 #CREATE  FUNCTIONS PART OF THE CODE
 #--------------------------------------------------------------------------------------------------
 @readConnection
-def createUsers(U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode,U_Dob):
+def createUsers(U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_Dob):
 	c=conn.cursor()
 	c.execute("""INSERT INTO Users (U_Email,U_Name,U_Gender, U_StrAdr,U_City, U_Pincode, U_Dob)
 	    VALUES(%s,%s,%s,%s,%s,%s,%s);""",(U_Email,U_Name,U_Gender,U_StrAdr,U_City,U_Pincode,U_Dob,) )
 	c.close()
-	pass
-
+	
 @readConnection
 def createIssues(I_Author,I_Title,I_Content,I_Lat,I_Lng,I_Image,I_AnonFlag,I_Type):
 	c=conn.cursor()

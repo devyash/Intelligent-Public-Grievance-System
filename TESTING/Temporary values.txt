@@ -23,6 +23,11 @@ DROP TABLE Votes Cascade;
 DROP TABLE Comments Cascade;
 DROP DATABASE IPGS;
 
-\i IPGS.sql
 
+
+\i IPGS.sql
+createUsers('aa22c@gmail.com','dqsv','male','21','mumbai','13131','1-1-2012')
 'aa22c@gmail.com','dqsv','21','mumbai',13131,'1-1-2012'
+
+INSERT INTO Users (U_Email,U_Name,U_Gender, U_StrAdr,U_City, U_Pincode, U_Dob)
+	    VALUES('aa22c@gmail.com','dqsv','male','21','mumbai','13131','1-1-2012');
