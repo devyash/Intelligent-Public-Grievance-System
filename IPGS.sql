@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS Comments Cascade;
 DROP database IF EXISTS IPGS;
 
 CREATE DATABASE IPGS;
+\c IPGS;
 
 CREATE TABLE Users(
 	/*User ID, email, name, street address, city, pincode,  date of birth*/

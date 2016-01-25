@@ -26,11 +26,16 @@ def readConnection(f):
 
     return readConnectionInner
 
+
+def connect():
+	#In case readConnection doesnt work use this to manually get connection and commit changes
+	return psycopg2.connect("dbname=IPGS")
+
 #--------------------------------------------------------------------------------------------------
 #CREATE  FUNCTIONS PART OF THE CODE
 #--------------------------------------------------------------------------------------------------
 @readConnection
-def createUsers(U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_Dob):
+def createUsers(conn,U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_Dob):
 	c=conn.cursor()
 	c.execute("""INSERT INTO Users (U_Email,U_Name,U_Gender, U_StrAdr,U_City, U_Pincode, U_Dob)
 	    VALUES(%s,%s,%s,%s,%s,%s,%s);""",(U_Email,U_Name,U_Gender,U_StrAdr,U_City,U_Pincode,U_Dob,) )
@@ -75,15 +80,21 @@ def createMarkers(A_Issue):
 #------------------------------------------------------------------------------------------------------
 
 @readConnection
-def readUsers(U_Id):
+def readUsers(conn,U_Id=None):
 	#Returns the details of the User in a dictionary as UserDetail
 	c=conn.cursor()
-	c.execute("""SELECT U_Id, U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_Dob, U_Admin FROM Users where U_Id = %s;""",(U_Id,))
-	row = c.fetchone()
-	UserDetail = ( {'U_Id': str(row[0]), 'U_Email': str(row[1]), 'I_Name': str(row[2]),'I_Gender': str(row[3]),'U_StrAdr': str(row[4]),'U_City': str(row[5]),'U_Pincode': str(row[6]),'U_Dob': str(row[7]),'U_Admin': str(row[8]) } )
+	if U_Id==None:
+		c.execute("""SELECT * FROM Users;""")
+		return c.fetchall()
+		print " \n Users Details printed of all Users"
+	else:
+		c.execute("""SELECT U_Id, U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_Dob, U_Admin FROM Users where U_Id = %s;""",(U_Id,))
+		row = c.fetchone()
+		UserDetail = ( {'U_Id': str(row[0]), 'U_Email': str(row[1]), 'I_Name': str(row[2]),'I_Gender': str(row[3]),'U_StrAdr': str(row[4]),'U_City': str(row[5]),'U_Pincode': str(row[6]),'U_Dob': str(row[7]),'U_Admin': str(row[8]) } )
+		print "\n Users Details printed of:",(U_Id)	
 	c.close()
 	return UserDetail
-	pass
+	
 
 @readConnection
 def readIssues(I_Id): 
@@ -248,25 +259,28 @@ def updatePassword(U_Id):
 	pass
 
 @readConnection
-def updateUsers(U_Id,U_Name=None,U_Gender=None,U_StrAdr=None,U_City=None,U_Pincode=None,U_Dob=None):
+def updateUsers(conn,U_Id,U_Name=None,U_Gender=None,U_StrAdr=None,U_City=None,U_Pincode=None,U_Dob=None):
 	# cannot update email,cannot update uid
 	#Pass None in the variables you dont want ro update
-	#BUG:DOES NOT TELL IF THE CONTENT IS NOT UPDATE/ERROR
-	c=conn.cursor()
-	if U_Id: 
-		if 'U_Name' in locals():
-			c.execute("""UPDATE Users SET U_Name=%s WHERE U_Id=%s;""",(U_Name,U_Id,))
-		if 'U_Gender' in locals():
-			c.execute("""UPDATE Users SET U_Gender=%s WHERE U_Id=%s;""",(U_Gender,U_Id,))
-		if 'U_StrAdr' in locals():
-			c.execute("""UPDATE Users SET U_City=%s WHERE U_Id=%s;""",(U_City,U_Id,))
-		if 'U_City' in locals():
-			c.execute("""UPDATE Users SET U_Pincode=%s WHERE U_Id=%s;""",(U_Pincode,U_Id,))
-		if 'U_Pincode' in locals():
-			c.execute("""UPDATE Users SET U_Dob=%s WHERE U_Id=%s;""",(U_Dob,U_Id,))
-		print "user details updated"
+	c=conn.cursor() 
+	if U_Name != None:
+		c.execute("""UPDATE Users SET U_Name=%s WHERE U_Id=%s;""",(U_Name,U_Id,))
+
+	if U_Gender != None:
+		c.execute("""UPDATE Users SET U_Gender=%s WHERE U_Id=%s;""",(U_Gender,U_Id,))
+	
+	if U_StrAdr != None:
+		c.execute("""UPDATE Users SET U_City=%s WHERE U_Id=%s;""",(U_City,U_Id,))
+	
+	if U_City != None:
+		c.execute("""UPDATE Users SET U_Pincode=%s WHERE U_Id=%s;""",(U_Pincode,U_Id,))
+	
+	if U_Pincode != None:
+		c.execute("""UPDATE Users SET U_Dob=%s WHERE U_Id=%s;""",(U_Dob,U_Id,))
+	
+	print "user details updated"
 	c.close()
-	pass
+
 
 @readConnection
 def updateIssues(I_Id,I_Title=None,I_Content=None,I_Lat=None,I_Lng=None,I_Image=None,I_AnonFlag=None,I_Type=None,I_Visible=None):
@@ -373,7 +387,8 @@ def deleteComments(C_Id, C_SqNo):
 		return false
 	pass
 	
-
+@readConnection
+def deleteUsers(U_Id):
 
 
 

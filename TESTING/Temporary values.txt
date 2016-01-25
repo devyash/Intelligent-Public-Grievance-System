@@ -27,7 +27,21 @@ DROP DATABASE IPGS;
 
 \i IPGS.sql
 createUsers('aa22c@gmail.com','dqsv','male','21','mumbai','13131','1-1-2012')
-'aa22c@gmail.com','dqsv','21','mumbai',13131,'1-1-2012'
+
 
 INSERT INTO Users (U_Email,U_Name,U_Gender, U_StrAdr,U_City, U_Pincode, U_Dob)
 	    VALUES('aa22c@gmail.com','dqsv','male','21','mumbai','13131','1-1-2012');
+
+from IPGSdb import readConnection
+from IPGSdb import createUsers
+from IPGSdb import readUsers
+from IPGSdb import *
+readUsers(1)
+python IPGSdb.py
+
+createUsers('ayolo@yolo.com','dqsv','male','21','mumbai','13131','1-1-2012')
+
+updateUsers(1,None,None,None,None,None,None)
+UPDATE Users SET U_Name='Devyash' WHERE U_Id=1;
+updateUsers(1,'Samsad',None,None,None,None,None)
+updateUsers(1)
