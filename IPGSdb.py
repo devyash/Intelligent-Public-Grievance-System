@@ -389,6 +389,13 @@ def deleteComments(C_Id, C_SqNo):
 	
 @readConnection
 def deleteUsers(U_Id):
+	c=conn.cursor()
+	if U_Id == None:
+		c.execute("""DELETE FROM Comments WHERE C_Id=%s AND C_SqNo= %s""",(C_Id,C_SqNo,))
+		c.close()
+		pass
+	c.execute("""DELETE FROM Users WHERE U_Id=%s """,(U_Id,))
+	c.close()
 
 
 
