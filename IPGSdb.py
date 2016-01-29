@@ -40,7 +40,8 @@ def createUsers(conn,U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_D
 	c.execute("""INSERT INTO Users (U_Email,U_Name,U_Gender, U_StrAdr,U_City, U_Pincode, U_Dob)
 	    VALUES(%s,%s,%s,%s,%s,%s,%s);""",(U_Email,U_Name,U_Gender,U_StrAdr,U_City,U_Pincode,U_Dob,) )
 	c.execute("""SELECT U_Id FROM Users WHERE U_Email=%s;""",(U_Email,))
-	U_Id = c.fetchone()
+	U_Id = c.fetchone() [0]
+	print "\nCreated User with U_Id:%s \n"%U_Id
 	c.close()
 	return U_Id
 
@@ -88,14 +89,20 @@ def readUsers(conn,U_Id=None):
 	c=conn.cursor()
 	if U_Id==None:
 		c.execute("""SELECT * FROM Users;""")
-		return c.fetchall()
-		print " \n Users Details printed of all Users"
+		print " \nUsers Details printed of all Users\n"
+		return tuple(c.fetchall())	
+		c.close()	
 	else:
-		c.execute("""SELECT U_Id, U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_Dob, U_Admin FROM Users where U_Id = %s;""",(U_Id,))
-		UserDetail = ( {'U_Id': str(row[0]), 'U_Email': str(row[1]), 'I_Name': str(row[2]),'I_Gender': str(row[3]),'U_StrAdr': str(row[4]),'U_City': str(row[5]),'U_Pincode': str(row[6]),'U_Dob': str(row[7]),'U_Admin': str(row[8]) } for row in c.fetchone() )
-		print "\n Users Details printed of:",(U_Id)	
-	c.close()
-	return UserDetail
+		if (isU_Id(U_Id)):
+			c.execute("""SELECT U_Id, U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_Dob, U_Admin FROM Users where U_Id = %s;""",(U_Id,))
+			UserDetail = ( {'U_Id': str(row[0]), 'U_Email': str(row[1]), \
+				'U_Name': str(row[2]),'U_Gender': str(row[3]),'U_StrAdr': str(row[4]),\
+				'U_City': str(row[5]),'U_Pincode': str(row[6]),'U_Dob': str(row[7]),\
+				'U_Admin': str(row[8]) } for row in c.fetchall() )
+			print "\nUsers Details printed of:%s\n"%U_Id
+			c.close()	
+			return next(UserDetail)
+		
 	
 
 @readConnection
@@ -227,13 +234,14 @@ def isI_Id(I_Id):
 	return I_AnonFlag
 
 @readConnection
-def isU_Id(U_Id):
+def isU_Id(conn,U_Id):
 	#Returns true if U_Id exists in the Users table
 	c=conn.cursor()
 	c.execute("""SELECT 1 FROM Users WHERE U_Id=%s """,(U_Id,))
 	if (c.fetchone()):
 		return True
 	else:
+		print "User U_Id:%s does not exist in the database:"%U_Id
 		return False
 
 	c.close()
@@ -247,7 +255,7 @@ def isComments(C_Author,C_Id,C_SqNo):
 		return True
 	else:
 		return False
-
+ 
 	c.close()
 	pass
 #-------------------------------------------------------------------------------------------------
@@ -265,22 +273,23 @@ def updateUsers(conn,U_Id,U_Name=None,U_Gender=None,U_StrAdr=None,U_City=None,U_
 	# cannot update email,cannot update uid
 	#Pass None in the variables you dont want ro update
 	c=conn.cursor() 
-	if U_Name != None:
-		c.execute("""UPDATE Users SET U_Name=%s WHERE U_Id=%s;""",(U_Name,U_Id,))
+	if (isU_Id(U_Id)):
+		if U_Name != None:
+			c.execute("""UPDATE Users SET U_Name=%s WHERE U_Id=%s;""",(U_Name,U_Id,))
 
-	if U_Gender != None:
-		c.execute("""UPDATE Users SET U_Gender=%s WHERE U_Id=%s;""",(U_Gender,U_Id,))
-	
-	if U_StrAdr != None:
-		c.execute("""UPDATE Users SET U_City=%s WHERE U_Id=%s;""",(U_City,U_Id,))
-	
-	if U_City != None:
-		c.execute("""UPDATE Users SET U_Pincode=%s WHERE U_Id=%s;""",(U_Pincode,U_Id,))
-	
-	if U_Pincode != None:
-		c.execute("""UPDATE Users SET U_Dob=%s WHERE U_Id=%s;""",(U_Dob,U_Id,))
-	
-	print "user details updated"
+		if U_Gender != None:
+			c.execute("""UPDATE Users SET U_Gender=%s WHERE U_Id=%s;""",(U_Gender,U_Id,))
+		
+		if U_StrAdr != None:
+			c.execute("""UPDATE Users SET U_City=%s WHERE U_Id=%s;""",(U_City,U_Id,))
+		
+		if U_City != None:
+			c.execute("""UPDATE Users SET U_Pincode=%s WHERE U_Id=%s;""",(U_Pincode,U_Id,))
+		
+		if U_Pincode != None:
+			c.execute("""UPDATE Users SET U_Dob=%s WHERE U_Id=%s;""",(U_Dob,U_Id,))
+		
+		print "\nUser details updated of U_Id:%s\n"%U_Id
 	c.close()
 
 
@@ -395,7 +404,11 @@ def deleteUsers(U_Id=None):
 	c = conn.cursor()
 	if U_Id == None:
 		c.execute("""DELETE FROM Users; """)
-	c.execute("""DELETE FROM Users WHERE U_Id=%s;""",(U_Id,))
+		print "\nDeleted all the Users\n"
+	else:
+		if(isU_Id(U_Id)):
+			c.execute("""DELETE FROM Users WHERE U_Id=%s;""",(U_Id,))
+			print "\nDeleted User U_Id:%s\n"%U_Id
 	conn.commit()
 	conn.close()
 	c.close()
