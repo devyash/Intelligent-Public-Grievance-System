@@ -39,8 +39,11 @@ def createUsers(conn,U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_D
 	c=conn.cursor()
 	c.execute("""INSERT INTO Users (U_Email,U_Name,U_Gender, U_StrAdr,U_City, U_Pincode, U_Dob)
 	    VALUES(%s,%s,%s,%s,%s,%s,%s);""",(U_Email,U_Name,U_Gender,U_StrAdr,U_City,U_Pincode,U_Dob,) )
+	c.execute("""SELECT U_Id FROM Users WHERE U_Email=%s;""",(U_Email,))
+	U_Id = c.fetchone()
 	c.close()
-	
+	return U_Id
+
 @readConnection
 def createIssues(I_Author,I_Title,I_Content,I_Lat,I_Lng,I_Image,I_AnonFlag,I_Type):
 	c=conn.cursor()
@@ -89,8 +92,7 @@ def readUsers(conn,U_Id=None):
 		print " \n Users Details printed of all Users"
 	else:
 		c.execute("""SELECT U_Id, U_Email, U_Name, U_Gender, U_StrAdr, U_City, U_Pincode, U_Dob, U_Admin FROM Users where U_Id = %s;""",(U_Id,))
-		row = c.fetchone()
-		UserDetail = ( {'U_Id': str(row[0]), 'U_Email': str(row[1]), 'I_Name': str(row[2]),'I_Gender': str(row[3]),'U_StrAdr': str(row[4]),'U_City': str(row[5]),'U_Pincode': str(row[6]),'U_Dob': str(row[7]),'U_Admin': str(row[8]) } )
+		UserDetail = ( {'U_Id': str(row[0]), 'U_Email': str(row[1]), 'I_Name': str(row[2]),'I_Gender': str(row[3]),'U_StrAdr': str(row[4]),'U_City': str(row[5]),'U_Pincode': str(row[6]),'U_Dob': str(row[7]),'U_Admin': str(row[8]) } for row in c.fetchone() )
 		print "\n Users Details printed of:",(U_Id)	
 	c.close()
 	return UserDetail
@@ -364,7 +366,7 @@ def deleteVotes(V_IssueId, V_Author):
 	#
 	c=conn.cursor()
 	try:
-		c.execute("""DELETE FROM Comments WHERE V_IssueId=%s AND V_Author= %s""",(V_IssueId,V_Author,))
+		c.execute("""DELETE FROM Comments WHERE V_IssueId=%s AND V_Author= %s;""",(V_IssueId,V_Author,))
 		c.close()
 		return true
 	except Exception, e:
@@ -378,7 +380,7 @@ def deleteComments(C_Id, C_SqNo):
 	#This function will return true if the comment is deleted successfully else false
 	c=conn.cursor()
 	try:
-		c.execute("""DELETE FROM Comments WHERE C_Id=%s AND C_SqNo= %s""",(C_Id,C_SqNo,))
+		c.execute("""DELETE FROM Comments WHERE C_Id=%s AND C_SqNo= %s;""",(C_Id,C_SqNo,))
 		c.close()
 		return true
 	except Exception, e:
@@ -387,14 +389,15 @@ def deleteComments(C_Id, C_SqNo):
 		return false
 	pass
 	
-@readConnection
-def deleteUsers(U_Id):
-	c=conn.cursor()
+
+def deleteUsers(U_Id=None):
+	conn=connect()
+	c = conn.cursor()
 	if U_Id == None:
-		c.execute("""DELETE FROM Comments WHERE C_Id=%s AND C_SqNo= %s""",(C_Id,C_SqNo,))
-		c.close()
-		pass
-	c.execute("""DELETE FROM Users WHERE U_Id=%s """,(U_Id,))
+		c.execute("""DELETE FROM Users; """)
+	c.execute("""DELETE FROM Users WHERE U_Id=%s;""",(U_Id,))
+	conn.commit()
+	conn.close()
 	c.close()
 
 
