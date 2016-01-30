@@ -32,7 +32,7 @@ CREATE TABLE Users(
 CREATE TABLE Issues(
 	/*Issue ID,Issue Aurthor, Issue Title, Content, Latitude, Longitude, Anonymous Flag, Issue Type, Timestamp with timezone */
 	I_Id serial  PRIMARY KEY,
-	I_Author serial references Users(U_Id) ON DELETE SET NULL  ON UPDATE Cascade,
+	I_Author serial references Users(U_Id) ON DELETE SET NULL  ON UPDATE CASCADE,
 	I_Title varchar(80) NOT NULL,
 	I_Content text NOT NULL,
 	/* 6decimal places give precision of 0.111 m, hence using real*/

@@ -128,34 +128,28 @@ def readIssues(conn,I_Id=None):
 	#Displaying Everything we have on that issue
 	#NOTE:Before calling this method Check if the I_AnonFlag is set, if it is set then dont return author of the issue
 	#return a dictonary which contains I_Id, I_Author, I_Title, I_Content, I_Lat, I_Lng, I_Image, I_AnonFlag, I_Type, I_time 
-	c=conn.cursor()
+	c2=conn.cursor()
 	if I_Id==None:
-		c.execute("""SELECT * FROM Issues;""")
+		c2.execute("""SELECT * FROM Issues;""")
 		print " \nUsers Details printed of all Issues\n"
-		IssuesDetail=list(c.fetchall())	
-		c.close()
+		IssuesDetail=list(c2.fetchall())	
+		c2.close()
 		return IssuesDetail	
 	else:
-		c.execute("""SELECT I_Id, I_Author, I_Title, I_Content, I_Lat, \
-			I_Lng, I_Image, I_AnonFlag, I_Type, I_time, I_Image\
-			 FROM Issues WHERE I_Id = %s;""",(I_Id,));
-		if(isI_AnonFlag(I_Id)):
-		 	IssuesDetail = ({'I_Id': str(row[0]), 'I_Author': '',\
-		 		'I_Title': str(row[2]),'I_Content': str(row[3]),'I_Lat': str(row[4])\
-		 		,'I_Lng': str(row[5]),'I_AnonFlag': str(row[6]),'I_Type': str(row[7]),\
-		 		'I_time': str(row[8]),'I_Image':str(row[9])}  for row in c.fetchall())
-			print "\nAuthor is anonymous\n"
-		else:
-			IssuesDetail = ({'I_Id': str(row[0]), 'I_Author': '',\
-		 		'I_Title': str(row[2]),'I_Content': str(row[3]),'I_Lat': str(row[4])\
-		 		,'I_Lng': str(row[5]),'I_AnonFlag': str(row[6]),'I_Type': str(row[7]),\
-		 		'I_time': str(row[8]),'I_Image':str(row[9])}  for row in c.fetchall())
-			print "\nAuthor is  NOT anonymous\n"
-		
-		print "\nIssue Details printed of:%s\n"%I_Id
-		c.close()
-		conn.commit()
-		return next(IssuesDetail)
+		if(isI_Id(I_Id)):
+			c2.execute("""SELECT I_Id, I_Author, I_Title, I_Content, I_Lat, \
+				I_Lng, I_Image, I_AnonFlag, I_Type, I_time, I_Image\
+				 FROM Issues WHERE I_Id = %s;""",(I_Id,));
+			if(isI_AnonFlag(I_Id)):
+			 	IssuesDetail = ({'I_Id': str(row[0]), 'I_Author': str(''),'I_Title': str(row[2]),'I_Content': str(row[3]),'I_Lat': str(row[4]),'I_Lng': str(row[5]),'I_AnonFlag': str(row[6]),'I_Type': str(row[7]),'I_time': str(row[8]),'I_Image':str(row[9])}  for row in c2.fetchall())
+				
+			else:
+				IssuesDetail = ({'I_Id': str(row[0]), 'I_Author':str(row[1]),'I_Title': str(row[2]),'I_Content': str(row[3]),'I_Lat': str(row[4]),'I_Lng': str(row[5]),'I_AnonFlag': str(row[6]),'I_Type': str(row[7]),'I_time': str(row[8]),'I_Image':str(row[9])}  for row in c2.fetchall())
+				
+			
+			print "\nIssue Details printed of:%s\n"%I_Id
+			c2.close()
+			return next(IssuesDetail)
 		
 
 @readConnection
@@ -265,6 +259,10 @@ def isI_AnonFlag(conn,I_Id):
 	c.execute("""SELECT I_AnonFlag FROM Issues WHERE I_Id=%s """,(I_Id,))
 	I_AnonFlag=c.fetchone()[0]
 	c.close()
+	if(I_AnonFlag):
+		print "\nAuthor is Anonymous\n"
+	else:
+		print "\nAuthor is  NOT anonymous\n"
 	return I_AnonFlag
 	
 @readConnection
