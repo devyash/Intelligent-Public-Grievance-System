@@ -35,7 +35,7 @@ def testIssues(C):
 	print "\n"
 	print "---------------------------------------------------------------------------------------------------------------------"
 	print "\n"
-	print "START TESTING USERS CRUD FUNCTIONS"
+	print "START TESTING ISSUES CRUD FUNCTIONS"
 	print "\n"
 	print "---------------------------------------------------------------------------------------------------------------------"
 	print(readIssues(None))
@@ -49,6 +49,16 @@ def testIssues(C):
 	print(readIssues(X))
 	updateIssues(X,"dwa","adwwa",21312,12312,"wda",False,123,True)
 	print(readIssues(X))
+	print(readIssues())
+	deleteIssues(X)
+	print(readIssues())
+	print readUsers()
+	print "---------------------------------------------------------------------------------------------------------------------"
+	print "\n"
+	print "DONE WITH ISSUES CRUD"
+	print "\n"
+	print "---------------------------------------------------------------------------------------------------------------------"
+
 
 def testComments():
 	pass

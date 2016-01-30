@@ -1,10 +1,10 @@
 #Listing all the functions that this webapp might require
 #
-#Major change update: forgot to add admin fucntions all togther.
+#Major change update: forgot to add admin functions all togther.
 import psycopg2
 
 #------------------------------------------------------------------------------------------
-#OTHER FUNCTIONS 
+#CONNEXTION FUNCTIONS 
 #------------------------------------------------------------------------------------------
 
 #Kind of understanding closures and decorators but what the heck!
@@ -67,6 +67,7 @@ def createIssues(conn,I_Author,I_Title,I_Content,I_Lat,I_Lng,I_Image,I_AnonFlag,
 		c.execute("""SELECT I_Id FROM Issues WHERE I_Author=%s AND I_Title=%s;""",(I_Author,I_Title,))
 		I_Id = c.fetchone()[0]
 		print "\nCreated Issue in Issues with I_Id:%s \n"%I_Id
+		conn.commit()
 		c.close() 
 		return I_Id
 
@@ -137,7 +138,7 @@ def readIssues(conn,I_Id=None):
 	else:
 		c.execute("""SELECT I_Id, I_Author, I_Title, I_Content, I_Lat, \
 			I_Lng, I_Image, I_AnonFlag, I_Type, I_time, I_Image\
-			 FROM Issues WHERE I_Id = %s""",(I_Id,));
+			 FROM Issues WHERE I_Id = %s;""",(I_Id,));
 		if(isI_AnonFlag(I_Id)):
 		 	IssuesDetail = ({'I_Id': str(row[0]), 'I_Author': '',\
 		 		'I_Title': str(row[2]),'I_Content': str(row[3]),'I_Lat': str(row[4])\
@@ -415,20 +416,18 @@ def updateVotes(V_IssueId,V_Author,V_Flag):
 #----------------------------------------------------------------------------------------------
 
 @readConnection
-def deleteIssues(I_Id):
+def deleteIssues(conn,I_Id=None):
 	#This function will return true if the issue is deleted successfully else false
-	#
 	c=conn.cursor()
-	try:
-		c.execute("""DELETE FROM Issues WHERE I_Id=%s""",(I_Id,))
-		c.close()
-		return true
-	except Exception, e:
-		print "Exception in delete Issues"
+	if I_Id == None:
+		c.execute("""DELETE FROM Issues CASCADE; """)
+		print "\nDeleted all the Issues\n"
 	else:
-		return false
-	pass
-
+		c.execute("""DELETE FROM Issues WHERE I_Id=%s;""",(I_Id,))
+		print "\nDeleted I_Id:%s\n"%I_Id
+	c.close()
+	return True
+	
 @readConnection
 def deleteVotes(V_IssueId, V_Author):
 	#This function will return true if the vote is deleted successfully else false
