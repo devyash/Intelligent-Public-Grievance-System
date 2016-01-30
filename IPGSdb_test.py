@@ -30,7 +30,6 @@ def testUsers():
 	print "DONE WITH USERS CRUD"
 	print "\n"
 	print "---------------------------------------------------------------------------------------------------------------------"
-	print C
 	return (C,D)
 
 
@@ -44,9 +43,12 @@ def testIssues(C):
 	print(readIssues(None))
 	print C[0]
 	X=createIssues(C[0],'Big problem','This is a very big problem... Blah..Blah..Blah',12312.1231,132123.12312,'c:/ad/image/1.jpg',False,3)
+	Z=createIssues(C[0],'Big problem','This is a very big problem... Blah..Blah..Blah',12312.1231,132123.12312,'c:/ad/image/1.jpg',False,3)
 	print X
 	print readIssues(X)
 	print readIssues()
+	return (X,Z)
+
 	#Z=createIssues(C[0],'Big proqw','This is a very big problem... Blah..Blah..Blah',12312.1231,132123.12312,'c:/ad/image/1.jpg',True,3)
 	#print Z
 	#Y=createIssues(C[1],'Big problem','This is a very big problem... Blah..Blah..Blah',12312.1231,132123.12312,'c:/ad/image/1.jpg',True,3)
@@ -73,12 +75,31 @@ def testIssues(C):
 def testComments():
 	pass
 
-def testVotes():
-	pass
+def testVotes(X,C):
+	print "---------------------------------------------------------------------------------------------------------------------"
+	print "\n"
+	print "TESTING VOTES TABLE"
+	print "\n"
+	print "---------------------------------------------------------------------------------------------------------------------"
+	print "X:",X
+	print "C[0]:",C[0]
+	print readUsers(C[0])
+	print readIssues(X[0])
+
+	createVotes(X[0],C[0],False)
+	createVotes(X[0],C[1],False)
+	print readVotes(X[0])
+	createVotes(X[1],C[0],True)
+	print readVotes()
+	deleteVotes(X[0])
+	print readVotes()
+	print readVotes(X[0])
+	updateVotes(X[0],C[0],True)
+	print readVotes(X[0])
 
 if __name__ == '__main__':
 	C=testUsers()
-	testIssues(C)
+	X=testIssues(C)
 	testComments()
-	testVotes()
+	testVotes(X,C)
 	print "Success! All tests passed!"

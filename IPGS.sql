@@ -16,7 +16,7 @@ CREATE DATABASE IPGS;
 CREATE TABLE Users(
 	/*User ID, email, name, street address, city, pincode,  date of birth*/
 	/* 255 varchar takes 1 byte of data*/
-	 U_Id serial PRIMARY KEY,
+	 U_Id serial PRIMARY KEY ,
 	 U_Email varchar(255) UNIQUE,
 	 U_Name varchar(255) NOT NULL,
 	 U_Gender varchar(10) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE Users(
 CREATE TABLE Issues(
 	/*Issue ID,Issue Aurthor, Issue Title, Content, Latitude, Longitude, Anonymous Flag, Issue Type, Timestamp with timezone */
 	I_Id serial  PRIMARY KEY,
-	I_Author serial references Users(U_Id) ON DELETE SET NULL  ON UPDATE CASCADE,
+	I_Author serial references Users(U_Id) ON DELETE CASCADE ON UPDATE CASCADE,
 	I_Title varchar(80) NOT NULL,
 	I_Content text NOT NULL,
 	/* 6decimal places give precision of 0.111 m, hence using real*/
@@ -69,8 +69,8 @@ CREATE TABLE Comments(
 );
 
 CREATE TABLE Votes(
-	V_IssueId serial references Issues(I_Id),
-	V_Author serial references Users(U_Id),
+	V_IssueId serial references Issues(I_Id) ON DELETE CASCADE,
+	V_Author serial references Users(U_Id) ON DELETE CASCADE,
 	V_Flag boolean,
 	/*false-Dislike true- Like*/
 	V_time timestamptz DEFAULT CURRENT_TIMESTAMP,

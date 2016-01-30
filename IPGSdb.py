@@ -1,10 +1,11 @@
 #Listing all the functions that this webapp might require
 #
 #Major change update: forgot to add admin functions all togther.
+# KNOWN BUG  1 :IN readVotes
 import psycopg2
 
 #------------------------------------------------------------------------------------------
-#CONNEXTION FUNCTIONS 
+#CONNECTION FUNCTIONS 
 #------------------------------------------------------------------------------------------
 
 #Kind of understanding closures and decorators but what the heck!
@@ -70,6 +71,9 @@ def createIssues(conn,I_Author,I_Title,I_Content,I_Lat,I_Lng,I_Image,I_AnonFlag,
 		conn.commit()
 		c.close() 
 		return I_Id
+	else:
+		print"\n Issues Not Created\n"
+
 
 @readConnection
 def createComments(C_Author,C_Content,I_Id):
@@ -80,16 +84,15 @@ def createComments(C_Author,C_Content,I_Id):
 	pass
 
 @readConnection
-def createVotes(I_Id,U_Id,V_Flag):
+def createVotes(conn,I_Id,U_Id,V_Flag):
 	c=conn.cursor()
 	#Checks if the votes exits if not it will insert the new vote
-	c.execute("""IF( NOT EXITS(SELECT * FROM Votes WHERE V_IssueId=%s AND V_Author=%s))
-				 BEGIN 
-				 INSERT INTO Comments (I_Id,U_Id,V_Flag)
-				 END;""",(I_Id,U_Id,))
-	c.close()
-	pass
-
+	if(isVotes(I_Id,U_Id) == False):
+		c.execute("""INSERT INTO Votes (V_IssueId,V_Author,V_Flag) VALUES(%s,%s,%s);""",(I_Id,U_Id,V_Flag,))
+		print "Vote Created!"+"I_Id:",I_Id,"U_Id:",U_Id
+		return (I_Id,U_Id)
+		c.close()
+	
 
 def createMarkers(A_Issue):
 	#this will set markers on the map based on I_type
@@ -122,7 +125,6 @@ def readUsers(conn,U_Id=None):
 			c.close()	
 			return next(UserDetail)
 		
-	
 @readConnection
 def readIssues(conn,I_Id=None): 
 	#Displaying Everything we have on that issue
@@ -151,7 +153,6 @@ def readIssues(conn,I_Id=None):
 			c2.close()
 			return next(IssuesDetail)
 		
-
 @readConnection
 def readComments(I_Id):
 	#Display all the comments on an Issue.
@@ -162,22 +163,30 @@ def readComments(I_Id):
 	pass
 
 @readConnection
-def readVotes(I_Id):
-	c=conn.cursor()
-	if(isI_Id):
-		c.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true) AS likes  GROUP BY V_flag;""",(I_Id,))
-		likes=c.fetchall()
-		c.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = false) AS dislikes  GROUP BY V_flag;""",(I_Id,))
-		dislikes=c.fetchall()
-		c.close()
-		return (likes, dislikes)
+def readVotes(conn,I_Id=None):
+	#RETURNING VALUES in terms of list of tuples or only a list depending on the number of Flags set as True, WILL HAVE TO CORRECT IT BUG!!!!!
+	c3=conn.cursor()
+	if (I_Id==None):
+		c3.execute("""SELECT * From Votes;""")
+		print "Printing the whole Votes Table"
+		votes=c3.fetchall()
+		c3.close()
+		return votes
 	else:
-		print"Issue doesnt have any votes"
-		return (None,None)
+		if(isVotes(I_Id)):
+			
+			if(isI_Id):
+				c3.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true) AS likes  GROUP BY V_flag;""",(I_Id,))
+				likes=c3.fetchall()
+				c3.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = false) AS dislikes  GROUP BY V_flag;""",(I_Id,))
+				dislikes=c3.fetchall()
+				c3.close()
+				return (likes, dislikes)
+			else:
+				return (None,None)
 
-	#return number of flags set for a I_ID
-	#count(*) from votes where I_Id=I_Id from Issues group by V_flag
-	pass
+		#return number of flags set for a I_ID
+		#count(*) from votes where I_Id=I_Id from Issues group by V_flag
 	
 @readConnection
 def readAllIssues(list_I_Id):
@@ -316,6 +325,36 @@ def isComments(C_Author,C_Id,C_SqNo):
 	c.close()
 	pass
 
+@readConnection
+def isVotes(conn,I_Id,U_Id=None):
+	#Condition 1:Returns true if there exists an entery in the vote table for the Issue
+	#Condition 2:Returns True if the user has already voted, else returns false.
+	c=conn.cursor()
+	if U_Id==None:
+		#Condition 1
+		#Returns true if there exists an entery in the vote table for the Issue
+		c.execute("""SELECT 1 FROM Votes WHERE V_IssueId=%s """,(I_Id,))
+		if (c.fetchone()):
+			c.close()
+			print "\nThis Issue (Issue id: %s)has Votes too!\n"%I_Id
+			return True
+		else:
+			c.close()
+			print "\nThis Issue (Issue id: %s) Does not have any Vote! Let the users Vote!\n"%I_Id
+			return False
+	else:
+		#Condition 2:
+		#Condition 2:Returns True if the user has already voted, else returns false.
+		c.execute("""SELECT 1 FROM Votes WHERE V_IssueId=%s AND V_Author=%s """,(I_Id,U_Id))
+		if (c.fetchone()):
+			c.close()
+			print "\nUser has already Voted! Issue Id:",I_Id," U_Id:",U_Id,"\n"
+			return True
+		else:
+			c.close()
+			print "\nUser has  NOT Voted! Please VOTE! Issue Id:",I_Id,"U_Id:",U_Id,"\n"
+			return False
+
 #-------------------------------------------------------------------------------------------------
 #UPDATE FUNCTIONS PART OF THE API
 #-------------------------------------------------------------------------------------------------
@@ -385,11 +424,10 @@ def updateComments(C_Author,C_Id,C_SqNo,C_Content=None):
 	pass
 
 @readConnection
-def updateVotes(V_IssueId,V_Author,V_Flag):
+def updateVotes(conn,I_Id,U_Id,V_Flag):
 	c=conn.cursor()
-	c.execute("""UPDATE Votes SET V_Flag=%s WHERE V_IssueId=%s AND V_Author= %s""",(V_IssueId,V_Author,V_Flag,))
+	c.execute("""UPDATE Votes SET V_Flag=%s WHERE V_IssueId=%s AND V_Author= %s;""",(V_Flag,I_Id,U_Id,))
 	c.close()
-	pass
 
 #@readConnection
 #def updateI_Visible(I_Id, U_Id, I_Author,I_Visible):
@@ -418,7 +456,7 @@ def deleteIssues(conn,I_Id=None):
 	#This function will return true if the issue is deleted successfully else false
 	c=conn.cursor()
 	if I_Id == None:
-		c.execute("""DELETE FROM Issues CASCADE; """)
+		c.execute("""DELETE FROM Issues ; """)
 		print "\nDeleted all the Issues\n"
 	else:
 		c.execute("""DELETE FROM Issues WHERE I_Id=%s;""",(I_Id,))
@@ -427,19 +465,19 @@ def deleteIssues(conn,I_Id=None):
 	return True
 	
 @readConnection
-def deleteVotes(V_IssueId, V_Author):
+def deleteVotes(conn, I_Id=None, U_Id=None):
 	#This function will return true if the vote is deleted successfully else false
 	#
 	c=conn.cursor()
-	try:
-		c.execute("""DELETE FROM Comments WHERE V_IssueId=%s AND V_Author= %s;""",(V_IssueId,V_Author,))
-		c.close()
-		return true
-	except Exception, e:
-		print "Exception in delete Vote"
+	if I_Id == None and U_Id== None:
+		c.execute("""DELETE FROM Votes ; """)
+		print "\nDeleted all the Votes\n"
 	else:
-	 return false
-	pass
+		c.execute("""DELETE FROM Votes WHERE V_IssueId=%s AND V_Author= %s;""",(I_Id,U_Id,))
+		print ("\nDeleted The vote of ","I_Id:",I_Id,"U_Id",U_Id,"\n")
+	c.close()
+	return True
+	
 
 @readConnection
 def deleteComments(C_Id, C_SqNo):
