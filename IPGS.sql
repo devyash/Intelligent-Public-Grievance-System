@@ -56,13 +56,13 @@ CREATE TABLE Issues(
 
 CREATE TABLE Comments(
 	/* Comment Author, Comment Content, Comment Time stamp with timezone, PRIMARY KEY[Comment ID, Comment Sequence Number]*/
-	C_Author serial references Users(U_Id),
+	C_Id serial references Issues(I_Id) ON DELETE CASCADE,
+	C_Author serial references Users(U_Id) ON DELETE CASCADE,
 	C_Content text,
 	/*Time stamp with timezone*/
 	C_time timestamptz DEFAULT CURRENT_TIMESTAMP,
-	C_Id serial references Issues(I_Id),
 	C_SqNo serial,
-	PRIMARY KEY (C_Author,C_Id, C_SqNo)
+	PRIMARY KEY (C_Id,C_Author,C_SqNo)
 	
 
 

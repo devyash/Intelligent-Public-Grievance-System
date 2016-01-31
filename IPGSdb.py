@@ -76,12 +76,16 @@ def createIssues(conn,I_Author,I_Title,I_Content,I_Lat,I_Lng,I_Image,I_AnonFlag,
 
 
 @readConnection
-def createComments(C_Author,C_Content,I_Id):
+def createComments(conn,I_Id,U_Id,C_Content):
+	#returns a tuple with (I_Id,U_Id,C_SqNo)
 	c=conn.cursor()
-	c.execute("""INSERT INTO Comments (C_Author,C_Content,I_Id)
-	    VALUES(%s,%s,%s);""",(C_Author,C_Content,I_Id,) )
-	c.close() 
-	pass
+	#No need to check if comment exists as multiple comments are allowed 
+	c.execute("""INSERT INTO Comments (C_Id,C_Author,C_Content) VALUES(%s,%s,%s);""",(I_Id,U_Id,C_Content,) )
+	print "Comment Created!"+"\n I_Id/C_Id:",I_Id,"\n U_Id/C_Author:",U_Id
+	c.execute("""SELECT C_SqNo FROM Comments WHERE C_Id=%s AND C_Author= %s AND C_Content=%s ;""",(I_Id,U_Id,C_Content,))
+	C_SqNo = c.fetchone()[0]
+	c.close()
+	return (I_Id,U_Id,C_SqNo) 
 
 @readConnection
 def createVotes(conn,I_Id,U_Id,V_Flag):
@@ -89,9 +93,10 @@ def createVotes(conn,I_Id,U_Id,V_Flag):
 	#Checks if the votes exits if not it will insert the new vote
 	if(isVotes(I_Id,U_Id) == False):
 		c.execute("""INSERT INTO Votes (V_IssueId,V_Author,V_Flag) VALUES(%s,%s,%s);""",(I_Id,U_Id,V_Flag,))
-		print "Vote Created!"+"I_Id:",I_Id,"U_Id:",U_Id
-		return (I_Id,U_Id)
+		print "Vote Created!"+"\nI_Id/V_IssueId:",I_Id,"\nU_Id/V_Author:",U_Id
 		c.close()
+		return (I_Id,U_Id)
+		
 	
 
 def createMarkers(A_Issue):
@@ -154,27 +159,36 @@ def readIssues(conn,I_Id=None):
 			return next(IssuesDetail)
 		
 @readConnection
-def readComments(I_Id):
+def readComments(conn,I_Id=None):
 	#Display all the comments on an Issue.
 	#returns a list of dictionary containing all the comments on that Issues
-	c.execute("""SELECT C_Author, C_Content, C_time, C_Id, C_SqNo FROM Comments WHERE C_Id= %s ORDER BY C_SqNo);""",(I_Id,)) 
-	CommentDetail = ({'C_Author': str(row[0]), 'C_Content': str(row[1]),'C_time': str(row[2]),'C_Id': str(row[3]),'C_SqNo': str(row[4])} for row in c.fetchall() )
-	return CommentDetail
-	pass
+	c=conn.cursor()
+	if (I_Id==None):
+		print "Please enter the Issues Comments You want to Display. Entered I_Id was null"
+		return None
+
+	else:
+		if(isComments(I_Id)):
+			if(isI_Id):
+				#Returns a list of dictionaries with the comments
+				c.execute("""SELECT C_Author, C_Content, C_time, C_Id, C_SqNo FROM Comments WHERE C_Id= %s ORDER BY C_SqNo;""",(I_Id,)) 
+				CommentDetail=[]
+				for row in c.fetchall():
+					CommentDetail.append({'C_Author': str(row[0]), 'C_Content': str(row[1]),'C_time': str(row[2]),'C_Id': str(row[3]),'C_SqNo': str(row[4])})
+				c.close()
+				return CommentDetail
+			else:
+				return None
 
 @readConnection
 def readVotes(conn,I_Id=None):
 	#RETURNING VALUES in terms of list of tuples or only a list depending on the number of Flags set as True, WILL HAVE TO CORRECT IT BUG!!!!!
 	c3=conn.cursor()
 	if (I_Id==None):
-		c3.execute("""SELECT * From Votes;""")
-		print "Printing the whole Votes Table"
-		votes=c3.fetchall()
-		c3.close()
-		return votes
+		print "Please enter the Issues Votes You want to Display. Entered I_Id was null"
+		return None
 	else:
 		if(isVotes(I_Id)):
-			
 			if(isI_Id):
 				c3.execute("""SELECT count(*) FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true) AS likes  GROUP BY V_flag;""",(I_Id,))
 				likes=c3.fetchall()
@@ -314,16 +328,48 @@ def isU_Email(conn,U_Email):
 		return True
 
 @readConnection
-def isComments(C_Author,C_Id,C_SqNo):
-	c=conn.cursor()
-	c.execute("""SELECT 1 FROM Users WHERE C_Author=%s AND C_Id=%s AND C_SqNo """,(C_Author,C_Id,C_SqNo))
-	if (c.fetchone()):
-		return True
-	else:
-		return False
- 
-	c.close()
-	pass
+def isComments(conn,I_Id=None,U_Id=None,C_SqNo=None):
+	#This Function will check 3 things
+	#Condition 1: ONLY I_Id is given, Meaning does this issue have any comments if not it returns false, else true
+	#Condition 2: ONLY U_ID is given, Meaning does this User have any comments? if yes then it returns true else false
+	#Condition 3: ALL 3 are given, Does this comment exists? Used before upadting the comment
+	c=conn.cursor() 
+	if(C_SqNo== None and U_Id == None):
+		#Condition 1
+		c.execute("""SELECT 1 FROM Comments WHERE C_Id=%s;""",(I_Id,))
+		if (c.fetchone()):
+			c.close()
+			print"\nThere are comments on this CommentID/IssueId:",I_Id,"\n"
+			return True
+		else:
+			c.close()
+			print"\nThere are  NO comments on this CommentID/IssueId:",I_Id,"\n"
+			return False
+
+	elif(I_Id== None and C_SqNo== None):
+		#Condition 2
+		c.execute("""SELECT 1 FROM Comments WHERE C_Author=%s;""",(U_Id,))
+		if (c.fetchone()):
+			c.close()
+			print"\nThere are comments Made by the User with U_Id/C_Author:",U_Id,"\n"
+			return True
+		else:
+			c.close()
+			print"\nThere are NO comments made by the User with U_Id/C_Author:",U_Id,"\n"
+			return False
+
+	elif(I_Id!= None and U_Id != None and C_SqNo!=None):
+		#Condition 3
+		c.execute("""SELECT 1 FROM Comments WHERE C_Id = %s AND C_Author=%s AND C_SqNo=%s;""",(I_Id,U_Id,C_SqNo,))
+		if (c.fetchone()):
+			c.close()
+			print"\nThere exists a comment with","CommentID/IssueId:",I_Id,"U_Id/C_Author:",U_Id,"C_SqNo:",C_SqNo,"\n"
+			return True
+		else:
+			c.close()
+			print"\nThere is NO comment with","CommentID/IssueId:",I_Id,"U_Id/C_Author:",U_Id,"C_SqNo:",C_SqNo,"\n"
+			return False
+	
 
 @readConnection
 def isVotes(conn,I_Id,U_Id=None):
@@ -416,12 +462,11 @@ def updateIssues(conn,I_Id,I_Title=None,I_Content=None,I_Lat=None,I_Lng=None,I_I
 		c.close()
 
 @readConnection
-def updateComments(C_Author,C_Id,C_SqNo,C_Content=None):
+def updateComments(conn,I_Id,U_Id,C_SqNo,C_Content):
 	c=conn.cursor()
-	if 'C_Content' in locals():
-		c.execute("""UPDATE Comments SET C_Content=%s WHERE C_Author=%s AND C_Id= %s AND C_SqNo =%s""",(C_Content,C_Author,C_Id,C_SqNo,))
+	if(isComments(I_Id,U_Id,C_SqNo)):
+		c.execute("""UPDATE Comments SET  C_Content=%s WHERE C_Id= %s AND C_Author=%s AND  C_SqNo =%s""",(C_Content,I_Id,U_Id,C_SqNo,))
 	c.close()
-	pass
 
 @readConnection
 def updateVotes(conn,I_Id,U_Id,V_Flag):
@@ -474,24 +519,20 @@ def deleteVotes(conn, I_Id=None, U_Id=None):
 		print "\nDeleted all the Votes\n"
 	else:
 		c.execute("""DELETE FROM Votes WHERE V_IssueId=%s AND V_Author= %s;""",(I_Id,U_Id,))
-		print ("\nDeleted The vote of ","I_Id:",I_Id,"U_Id",U_Id,"\n")
+		print "\nDeleted The vote of ","I_Id:",I_Id,"U_Id:",U_Id,"\n"
 	c.close()
 	return True
 	
 
 @readConnection
-def deleteComments(C_Id, C_SqNo):
+def deleteComments(conn,I_Id,U_Id,C_SqNo):
 	#This function will return true if the comment is deleted successfully else false
 	c=conn.cursor()
-	try:
-		c.execute("""DELETE FROM Comments WHERE C_Id=%s AND C_SqNo= %s;""",(C_Id,C_SqNo,))
-		c.close()
-		return true
-	except Exception, e:
-		print "Exception in delete comment"
-	else:
-		return false
-	pass
+	c.execute("""DELETE FROM Comments WHERE C_Id=%s AND C_Author=%s AND C_SqNo= %s;""",(I_Id,U_Id,C_SqNo,))
+	print"\n Deleted the Vote\n"
+	c.close()
+	return True
+	
 	
 def deleteUsers(U_Id=None):
 	conn=connect()

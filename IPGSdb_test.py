@@ -72,19 +72,34 @@ def testIssues(C):
 	print "---------------------------------------------------------------------------------------------------------------------"
 
 
-def testComments():
-	pass
-
+def testComments(X,C):
+	print "---------------------------------------------------------------------------------------------------------------------"
+	print "\n"
+	print "TESTING Comments TABLE"
+	print "\n"
+	print "---------------------------------------------------------------------------------------------------------------------"
+	print "COMMENT/ISSUE IDS","X[0]:",X[0],"X[1]",X[1]
+	print "USER IDS","C[0]:",C[0],"C[1]",C[1]
+	print readUsers()
+	print readIssues()
+	comment1=createComments(X[0],C[0],"11111111111HAHAHAHAHH! STUPID COMMENT")
+	comment2=createComments(X[0],C[1],"USER 2 YOLOLO")
+	comment3=createComments(X[0],C[0],"111122222222222222222HAHAHAHAHH! STUPID COMMENT")
+	print readComments(X[0])
+	updateComments(comment1[0],comment1[1],comment1[2],"NOOBS")
+	print readComments(X[0])
+	deleteComments(comment1[0],comment1[1],comment1[2])
+	print readComments(X[0])
 def testVotes(X,C):
 	print "---------------------------------------------------------------------------------------------------------------------"
 	print "\n"
 	print "TESTING VOTES TABLE"
 	print "\n"
 	print "---------------------------------------------------------------------------------------------------------------------"
-	print "X:",X
-	print "C[0]:",C[0]
-	print readUsers(C[0])
-	print readIssues(X[0])
+	print "X[0]:",X[0],"X[1]",X[1]
+	print "C[0]:",C[0],"C[1]",C[1]
+	print readUsers()
+	print readIssues()
 
 	createVotes(X[0],C[0],False)
 	createVotes(X[0],C[1],False)
@@ -100,6 +115,6 @@ def testVotes(X,C):
 if __name__ == '__main__':
 	C=testUsers()
 	X=testIssues(C)
-	testComments()
 	testVotes(X,C)
+	testComments(X,C)
 	print "Success! All tests passed!"
