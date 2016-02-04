@@ -32,7 +32,7 @@ CREATE TABLE Users(
 CREATE TABLE Issues(
 	/*Issue ID,Issue Aurthor, Issue Title, Content, Latitude, Longitude, Anonymous Flag, Issue Type, Timestamp with timezone */
 	I_Id serial  PRIMARY KEY,
-	I_Author serial references Users(U_Id) ON DELETE CASCADE ON UPDATE CASCADE,
+	I_Author serial references Users(U_Id) ON DELETE CASCADE ,
 	I_Title varchar(80) NOT NULL,
 	I_Content text NOT NULL,
 	/* 6decimal places give precision of 0.111 m, hence using real*/
@@ -51,7 +51,6 @@ CREATE TABLE Issues(
 	I_time timestamptz DEFAULT CURRENT_TIMESTAMP,
 	I_Visible boolean DEFAULT TRUE
 	/*True- visible false- NOT visible*/ 
-
 );
 
 CREATE TABLE Comments(

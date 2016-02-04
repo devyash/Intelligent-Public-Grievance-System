@@ -96,8 +96,8 @@ def testVotes(X,C):
 	print "TESTING VOTES TABLE"
 	print "\n"
 	print "---------------------------------------------------------------------------------------------------------------------"
-	print "X[0]:",X[0],"X[1]",X[1]
-	print "C[0]:",C[0],"C[1]",C[1]
+	print "COMMENT/ISSUE IDS","X[0]:",X[0],"X[1]",X[1]
+	print "USER IDS","C[0]:",C[0],"C[1]",C[1]
 	print readUsers()
 	print readIssues()
 
