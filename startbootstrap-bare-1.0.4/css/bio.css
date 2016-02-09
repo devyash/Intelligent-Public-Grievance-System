@@ -1,0 +1,46 @@
+html,body{ height: 100%; padding: 0; margin: 0; }
+.main{
+    height: 20%;
+}
+.nav{
+	line-height:140%;
+
+  	background-color: green;
+    float:left;
+    padding:5px;
+    width: 17%;
+
+}
+.section{
+	 background-color: lightblue;
+   float:left;
+   padding:10px;
+   width: 50%; 
+}
+.section1{
+  background-color: lightblue;
+   padding:10px;
+   width: 25%;
+}
+.reports{
+    height: 12%;
+    margin-top: 12%;
+}
+.closedIssues{
+    height: 12%;
+}
+.comments{
+    height: 12%;
+    
+}
+.votes{
+    height: 12%;
+}
+.followedIssues{
+    height: 12%;
+}
+.logout{
+    
+    text-align: center;
+    padding-top: 5%
+}
