@@ -1,0 +1,15 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from DB_setup import Base, Users, Issues, Comments, Votes
+import datetime
+engine=create_engine('sqlite:///IPGS.db')
+Base.metadata.bind= engine
+DBSession = sessionmaker(bind = engine)
+session = DBSession()
+myFirstUser = Users(email="dghfgefafg@.com",name="Devyash",gender="Male",strAdr="Raheja",city="Mumbai", pincode=400097,dob=datetime.datetime(2012,12,21))
+session.add(myFirstUser)
+session.commit()
+session.query(Users).all()
+user1=session.query(Users).first()
+
+print user1.name
