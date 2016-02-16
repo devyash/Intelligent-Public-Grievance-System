@@ -1,0 +1,119 @@
+<!--<html>
+<body>
+	FORM TO CREATE A NEW ISSUE-->
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+
+<script>
+var markersArray = [];
+function initialize()
+{
+  var mapProp = {
+    center: new google.maps.LatLng(19.1987603,72.872997),
+    zoom:14,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  };
+  var map = new google.maps.Map(document.getElementById("map"),mapProp);
+  map.addListener('click', function(e) {
+    placeMarkerAndPanTo(e.latLng, map);
+  });
+}
+
+function placeMarkerAndPanTo(latLng, map) {
+  var position = latLng;
+  while (markersArray.length) {
+    markersArray.pop().setMap(null);
+  }
+  var marker = new google.maps.Marker({
+    position: latLng,
+    map: map,
+    draggable:true
+  });
+  map.panTo(latLng);
+  markersArray.push(marker);
+  var lat = marker.getPosition().lat();
+  var lng = marker.getPosition().lng();
+  console.log(lat)
+  document.getElementById("lat").innerHTML.value = lat;
+  document.getElementById("lng").innerHTML.value = lng;
+
+}
+
+function loadScript()
+{
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.src = "http://maps.googleapis.com/maps/api/js?key=AIzaSyAqHobDCEl3R6O-bMyfRFz7hjQVx4LP3FI&sensor=true&callback=initialize";
+  document.body.appendChild(script);
+}
+
+
+window.onload = loadScript;
+
+
+</script>
+
+<div class="row">
+	<div class="col-md-6 col-md-offset-1 padding-top">
+		<div id="map" style="width:500px;height:380px;">
+			<label>maps</label>
+		</div>
+		<form>
+			<button onclick="getLocation()">Use my current location</button>
+		</form>
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="col-md-6 col-md-offset-1 padding-top">
+		<form action="#" method="post">
+			<div class="form-group">
+				<label for="I_Lat">Latitude:</label>
+				<input type="text" name="I_Lat" class="form-control" id="lat">
+
+				<label for="I_Lng">Longitude:</label>
+				<input type="text" name="I_Lng" class="form-control" id="lng">
+
+				<br>
+				<br>
+				<br>
+
+				<label for="I_Title">Summary(title)</label>
+				<input type="text" name="I_Title" class="form-control">
+
+				<label for="I_Content">Description</label>
+				<textarea name="I_Content" cols="15" rows="4" class="form-control" ></textarea>
+
+				<label for="I_Type">Type:</label>
+				<select name="I_Type"  class="form-control">
+    				<option value="1">Road Block</option>
+    				<option value="2">Wrong Parking</option>
+    				<option value="3">Illegal Garbage Dump</option>
+  				</select>
+
+				<label for="I_AnonFlag">Sensitive issue?</label>
+				<input type="checkbox" name="I_AnonFlag" value="True">Keep it annoymous				
+				<label for="anonymous">Don't show my name on this issue or show it on my profile page. But email me when someone comments on it</label>
+
+				<label for="pic">Photos</label>
+				<input type="file" name="pic" accept="image/*" class="form-control">
+				
+				<div class="padding-bottom">
+					<br><br></div>
+
+				<button type="submit" class="btn btn-default" id="submit" type="submit" class="form-control">
+				create</button>
+				
+			</div>
+		</form>
+	</div>
+</div>
+
+
+{% endblock %}
+
+
+<!--</body>
+</html>-->
