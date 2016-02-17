@@ -15,12 +15,12 @@ def newIssues():
     	#New Issue = createIssues(I_Author = login_session['U_Id'],I_Title = request.form['I_Title'],I_Content = request.form['I_Content'],I_Lat= request.form['I_Lat'],I_Lng= request.form['I_Lng'],I_Image= request.form['I_Image'],I_AnonFlag= request.form['I_AnonFlag'],I_Type= request.form['I_Type'])
         #newIssues = Issues(name=request.form['name'])
         #flash('New Restaurant %s Successfully Created' % newRestaurant.name)
-        print request.form['I_Lat']
-        print request.form['I_Lng']
-        print request.form['I_Title']
-        print request.form['I_Content']
-        print request.form['I_Type']
-        print request.form['I_AnonFlag']
+        #print request.form['I_Lat']
+        #print request.form['I_Lng']
+        #print request.form['I_Title']
+        #print request.form['I_Content']
+        #print request.form['I_Type']
+        #print request.form['I_AnonFlag']
         return redirect(url_for('showIssues'))
     else:
         return render_template('newIssues.html')
@@ -28,15 +28,18 @@ def newIssues():
 
 @app.route('/issues/<int:I_Id>/edit/', methods=['GET', 'POST'])
 def editIssues(I_Id):
- #   editedRestaurant = session.query(
-  #      Restaurant).filter_by(id=restaurant_id).one()
+ #editedRestaurant = session.query(
+ #       Restaurant).filter_by(id=restaurant_id).one()
+    #editedIssue = readIssues(I_Id) 
+    editedIssue={'I_Title':"Trial",'I_Type':2}
     if request.method == 'POST':
-        #if request.form['name']:
-           # editedRestaurant.name = request.form['name']
-            #flash('Restaurant Successfully Edited %s' % edited:
-        return render_template('editIssues.html', I_Id=I_Id )
+        if request.form['name']:
+            #editedRestaurant.name = request.form['name']
+            #flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
+            return redirect(url_for('showIssues'))
     else:
-        return redirect(url_for('showIssues'))
+        return render_template('editIssues.html', I_Title=editedIssue['I_Title'],I_Type=editedIssue['I_Type'])
+
 # Delete a restaurant
 @app.route('/issues/<int:I_Id>/delete/', methods=['GET', 'POST'])
 def deleteIssues(I_Id):

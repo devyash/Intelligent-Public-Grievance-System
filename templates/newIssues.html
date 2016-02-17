@@ -15,6 +15,8 @@ function initialize()
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
   var map = new google.maps.Map(document.getElementById("map"),mapProp);
+
+
   map.addListener('click', function(e) {
     placeMarkerAndPanTo(e.latLng, map);
   });
@@ -34,9 +36,8 @@ function placeMarkerAndPanTo(latLng, map) {
   markersArray.push(marker);
   var lat = marker.getPosition().lat();
   var lng = marker.getPosition().lng();
-  console.log(lat)
-  document.getElementById("lat").innerHTML.value = lat;
-  document.getElementById("lng").innerHTML.value = lng;
+  document.getElementById("lat").value = lat;
+  document.getElementById("lng").value = lng;
 
 }
 
@@ -51,6 +52,22 @@ function loadScript()
 
 window.onload = loadScript;
 
+//Getting Users Position
+//var x = document.getElementById("demo");
+
+//function getLocation() {
+//    if (navigator.geolocation) {
+//        navigator.geolocation.getCurrentPosition(showPosition);
+//    } else { 
+//        x.innerHTML = "Geolocation is not supported by this browser.";
+//    }
+//}
+
+//function showPosition(position) {
+//	console.log( position.coords.latitude);
+//    x.innerHTML = "Latitude: " + position.coords.latitude + 
+//    "<br>Longitude: " + position.coords.longitude;	
+//}
 
 </script>
 
@@ -59,9 +76,12 @@ window.onload = loadScript;
 		<div id="map" style="width:500px;height:380px;">
 			<label>maps</label>
 		</div>
+		<!--
 		<form>
 			<button onclick="getLocation()">Use my current location</button>
+			<p id="demo"></p>
 		</form>
+	-->
 	</div>
 </div>
 
