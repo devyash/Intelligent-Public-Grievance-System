@@ -1,0 +1,58 @@
+<!--<html>
+<body>
+	FORM TO CREATE A NEW ISSUE-->
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+
+<!--<script>
+var temp = "%s"%{{I_Type}};
+var mySelect = document.getElementById('mySelect');
+for (var i, j = 0; i = mySelect.options[j]; j++) {
+  if (i.value == temp) {
+    mySelect.selectedIndex = j;
+    break;
+  }
+}
+</script>-->
+<div class="row">
+	<div class="col-md-6 col-md-offset-1 padding-top">
+		<form action="#" method="post">
+			<div class="form-group">
+				<label for="I_Title">Summary(title)</label>
+				<input type="text" name="I_Title" class="form-control" value={{I_Title}}>
+
+				<label for="I_Content">Description</label>
+				<textarea name="I_Content" cols="15" rows="4" class="form-control" value={{I_Content}}></textarea>
+
+				<label for="I_Type">Type:</label>
+				<select name="I_Type"  class="form-control" id="mySelect">
+    				<option value="1" selected="selected" >Road Block</option>
+    				<option value="2">Wrong Parking</option>
+    				<option value="3">Illegal Garbage Dump</option>
+  				</select>
+
+				<label for="I_AnonFlag">Sensitive issue?</label>
+				<input type="checkbox" name="I_AnonFlag" value="True" selected=True>Keep it annoymous				
+				<label for="anonymous">Don't show my name on this issue or show it on my profile page. But email me when someone comments on it</label>
+
+				<label for="pic">Photos</label>
+				<input type="file" name="pic" accept="image/*" class="form-control">
+				
+				<div class="padding-bottom">
+					<br><br></div>
+
+				<button type="submit" class="btn btn-default" id="submit" type="submit" class="form-control">
+				create</button>
+				
+			</div>
+		</form>
+	</div>
+</div>
+
+
+{% endblock %}
+
+
+<!--</body>
+</html>-->
