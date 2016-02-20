@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 from IPGSdb import *
+import os,sys
 
 app = Flask(__name__)
-
+APP_ROOT=os.path.dirname(os.path.abspath(__file__))
 @app.route('/')
 @app.route('/main')
 def showIssues():
@@ -12,33 +13,48 @@ def showIssues():
 @app.route('/issues/new/', methods=['GET', 'POST'])
 def newIssues():
     if request.method == 'POST':
-    	#New Issue = createIssues(I_Author = login_session['U_Id'],I_Title = request.form['I_Title'],I_Content = request.form['I_Content'],I_Lat= request.form['I_Lat'],I_Lng= request.form['I_Lng'],I_Image= request.form['I_Image'],I_AnonFlag= request.form['I_AnonFlag'],I_Type= request.form['I_Type'])
+    	#NewIssue = createIssues(I_Author = login_session['U_Id'],I_Title = request.form['I_Title'],
+        #                         I_Content = request.form['I_Content'],I_Lat= request.form['I_Lat'],
+        #                         I_Lng= request.form['I_Lng'], I_Image= request.form['I_Image'],
+        #                         I_AnonFlag= request.form['I_AnonFlag'],I_Type= request.form['I_Type'])
         #newIssues = Issues(name=request.form['name'])
         #flash('New Restaurant %s Successfully Created' % newRestaurant.name)
-        #print request.form['I_Lat']
-        #print request.form['I_Lng']
-        #print request.form['I_Title']
-        #print request.form['I_Content']
-        #print request.form['I_Type']
-        #print request.form['I_AnonFlag']
+        print request.form['I_Lat']
+        print request.form['I_Lng']
+        print request.form['I_Title']
+        print request.form['I_Content']
+        print request.form['I_Type']
+        print request.form['I_AnonFlag']
+        target=os.path.join(APP_ROOT,'images/')
+        print target
+        if not os.path.isdir(target):
+            os.mkdir(target)
+        for file in request.files.getlist("file"):
+            print file
+            filename=file.filename
+            #os.rename(filename,request.form['I_Title'])
+            destination="/".join([target,filename])
+            print destination
+            file.save(destination)
+            
         return redirect(url_for('showIssues'))
     else:
         return render_template('newIssues.html')
 
 
-@app.route('/issues/<int:I_Id>/edit/', methods=['GET', 'POST'])
+@app.route('/issues/<int:I_Id>/edit/', methods=['GET', 'PUT'])
 def editIssues(I_Id):
  #editedRestaurant = session.query(
  #       Restaurant).filter_by(id=restaurant_id).one()
     #editedIssue = readIssues(I_Id) 
-    editedIssue={'I_Title':"Trial",'I_Type':2}
-    if request.method == 'POST':
+    editedIssue={'I_Title':"Trial",'I_Content':"THIS IS A TRIAL DETAIL ! BECAUSE YOLO!!",'I_Type':2}
+    if request.method == 'PUT':
         if request.form['name']:
             #editedRestaurant.name = request.form['name']
             #flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
             return redirect(url_for('showIssues'))
     else:
-        return render_template('editIssues.html', I_Title=editedIssue['I_Title'],I_Type=editedIssue['I_Type'])
+        return render_template('editIssues.html', I_Title=editedIssue['I_Title'],I_Content=editedIssue['I_Content'],I_Type=editedIssue['I_Type'])
 
 # Delete a restaurant
 @app.route('/issues/<int:I_Id>/delete/', methods=['GET', 'POST'])
