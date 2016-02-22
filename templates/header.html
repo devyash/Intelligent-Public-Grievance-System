@@ -1,15 +1,15 @@
-<div class="row top-menu">
+<!--<div class="row top-menu">
 	<div class="col-md-6">
-		<a href="{{url_for('showIssues')}}">
+		<a href="{{url_for('home')}}">
 			<span class="glyphicon glyphicon-home" aria-hidden="true"></span>Show All Issues
 		</a>
 	</div>
 	<div class="col-md-6 text-right">
-				<a href="{{url_for('showIssues')}}">	<p>Login Link will go Here </p> </a>
+				<a href="{{url_for('home')}}">	<p>Login Link will go Here </p> </a>
 		
 	</div>
 </div>
-
+-->
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -22,25 +22,25 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <li><a href="#">Home</a></li>
+        <li><a href="{{url_for('home')}}">Home</a></li>
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">ME <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">My Issues</a></li>
-            <li><a href="#">My Comments</a></li>
+            <li><a href="{{url_for('showMyIssues')}}">My Issues</a></li>
+            <li><a href="{{url_for('showMyComments')}}">My Comments</a></li>
           </ul>
         </li>
         <li><a href="{{url_for('newIssues')}}">Create New Issue</a></li>
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Nearby<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">View Map</a></li>
-            <li><a href="#">View List</a></li>
+            <li><a href="{{url_for('showNearbyIssuesMap')}}">View Map</a></li>
+            <li><a href="{{url_for('showNearbyIssuesList')}}">View List</a></li>
           </ul>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-        <li><a href="{{url_for('showIssues')}}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        <li><a href="{{url_for('home')}}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
       </ul>
     </div>
   </div>
