@@ -10,7 +10,6 @@ APP_ROOT=os.path.dirname(os.path.abspath(__file__))
 @app.route('/')
 @app.route('/main')
 def home():
-
 	return render_template('index.html')
 
 #------------------------------------------------------------------------------------------------------------------
@@ -45,60 +44,66 @@ def newIssues():
     else:
         return render_template('newIssues.html')
 
-@app.route('/issues/<int:I_Id>/view', methods=['GET'])
+@app.route('/issues/<int:I_Id>/view')
 def  showDetailedIssues(I_Id):
     return render_template('showdetailedissues.html')
 
-@app.route('/issues/<int:I_Id>/edit/', methods=['GET', 'PUT'])
+@app.route('/issues/<int:I_Id>/edit/', methods=['GET', 'POST'])
 def editIssues(I_Id):
  #editedRestaurant = session.query(
  #       Restaurant).filter_by(id=restaurant_id).one()
     #editedIssue = readIssues(I_Id) 
     editedIssue={'I_Title':"fadfbfeiu",'I_Content':"THIS IS A TRIAL DETAIL ! BECAUSE YOLO!!",'I_Type':2,'I_Lat':19,'I_Lng':72.872997,'I_AnonFlag':True}
-    if request.method == 'PUT':
+    if request.method == 'POST':
         if request.form['I_Title']:
             #editedRestaurant.name = request.form['name']
             #flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
-            return redirect(url_for('showDetailedIssues'), I_Id=I_Id)
+            return redirect(url_for('showDetailedIssues',I_Id=I_Id ))
     else:
         return render_template('editissues.html', I_Title=editedIssue['I_Title'],I_Content=editedIssue['I_Content'],I_Type=editedIssue['I_Type'],I_Lat=editedIssue['I_Lat'],I_Lng=editedIssue['I_Lng'], I_AnonFlag=editedIssue['I_AnonFlag'])
 
 # Delete a restaurant
-@app.route('/issues/<int:I_Id>/delete/', methods=['GET', 'DELETE'])
+@app.route('/issues/<int:I_Id>/delete/', methods=['GET', 'POST'])
 def deleteIssues(I_Id):
+    #issuetodelete=readIssues(I_Id)
     #restaurantToDelete = session.query(
     #   Restaurant).filter_by(id=restaurant_id).one()
-    if request.method == 'DELETE':
-       # session.delete(restaurantToDelete)
-       # flash('%s Successfully Deleted' % restaurantToDelete.name)
-       #session.commit()
-        return redirect(url_for('showDetailedIssues', I_Id=I_Id))
+    issuetodelete={'I_Title':"Trial Issue",'I_Content':"THIS IS A TRIAL DETAIL ! BECAUSE YOLO!!",'I_Type':2,'I_Lat':19,'I_Lng':72.872997,'I_AnonFlag':True}
+    if request.method == 'POST':
+        #deleteIssues(I_Id)
+        # session.delete(restaurantToDelete)
+        # flash('%s Successfully Deleted' % restaurantToDelete.name)
+        #session.commit()
+        return redirect(url_for('home'))
     else:
-        return render_template('deleteissues.html', I_Id=I_Id)
+        return render_template('deleteissues.html', I_Title=issuetodelete['I_Title'])
 
 #-----------------------------------------------------------------------------------------------------------------
 @app.route('/comments/<int:I_Id>/new/', methods=['GET', 'POST'])
 def newComments(I_Id):
+    Issue={'I_Title':"Trial Issue",'I_Content':"THIS IS A TRIAL DETAIL ! BECAUSE YOLO!!",'I_Type':2,'I_Lat':19,'I_Lng':72.872997,'I_AnonFlag':True}
     if request.method == 'POST':
-        return redirect(url_for('showDetailedIssues'))
+        return redirect(url_for('showDetailedIssues',I_Id=I_Id ))
     else:
-        return render_template('newcomments.html')
+        return render_template('newcomments.html',I_Title=Issue['I_Title'])
 
-@app.route('/comments/<int:C_Id>/<int:C_SqNo>/edit/', methods=['GET', 'PUT'])
+@app.route('/comments/<int:C_Id>/<int:C_SqNo>/edit/', methods=['GET', 'POST'])
 def editComments(C_Id,C_SqNo):
-    if request.method == 'PUT':
-        return redirect(url_for('showDetailedIssues'),I_Id=I_Id)
+    Issue={'I_Title':"Trial Issue",'I_Content':"THIS IS A TRIAL DETAIL ! BECAUSE YOLO!!",'I_Type':2,'I_Lat':19,'I_Lng':72.872997,'I_AnonFlag':True}
+    editComment={'C_Content':"Trial Comment BLAH BLAH BLAH \n BLAH BLAH BLAH", 'C_time':"12:00 pm",'C_author':"Devyash"}
+    if request.method == 'POST':
+        return redirect(url_for('showDetailedIssues',I_Id=C_Id ))
     else:
         #part to check if the user is the author of the comment
-        return render_template('editcomments.html')
+        return render_template('editcomments.html',I_Title=Issue['I_Title'],C_Content=editComment['C_Content'], C_time=editComment['C_time'], C_author=editComment['C_author'])
 
-@app.route('/comments/<int:C_Id>/<int:C_SqNo>/delete/', methods=['GET', 'DELETE'])
+@app.route('/comments/<int:C_Id>/<int:C_SqNo>/delete/', methods=['GET', 'POST'])
 def deleteComments(C_Id,C_SqNo):
-    if request.method == 'DELETE':
-        return redirect(url_for('showDetailedIssues'), I_Id=I_Id)
+    if request.method == 'POST':
+        return redirect(url_for('showDetailedIssues',I_Id=C_Id ))
     else:
         #part to check if the user is the author of the comment
-        return render_template('deletecomments.html')
+        return render_template('deletecomments.html',C_Id=C_Id)
 
 
 

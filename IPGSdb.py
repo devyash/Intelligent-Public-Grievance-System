@@ -157,6 +157,8 @@ def readIssues(conn,I_Id=None):
 			print "\nIssue Details printed of:%s\n"%I_Id
 			c2.close()
 			return next(IssuesDetail)
+		else:
+			return None
 		
 @readConnection
 def readComments(conn,I_Id=None):
@@ -504,8 +506,9 @@ def deleteIssues(conn,I_Id=None):
 		c.execute("""DELETE FROM Issues ; """)
 		print "\nDeleted all the Issues\n"
 	else:
-		c.execute("""DELETE FROM Issues WHERE I_Id=%s;""",(I_Id,))
-		print "\nDeleted I_Id:%s\n"%I_Id
+		if(isI_Id(I_Id)):
+			c.execute("""DELETE FROM Issues WHERE I_Id=%s;""",(I_Id,))
+			print "\nDeleted I_Id:%s\n"%I_Id
 	c.close()
 	return True
 	
