@@ -1,0 +1,39 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<BR>
+<h1>LIST OF ISSUES WITH LOGGED IN USER AS THE AUTHOR</h1>
+ <div class="table-responsive">          
+  <table class="table" align="right">
+    <thead>
+      <tr rowspan="2">
+        <th>I_Id:</th>
+        <th>Title</th>
+        <th colspan="2">Location</th>
+        <th colspan="2">Votes</th>
+        <tr>
+        <td></td>
+        <td></td>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th>Likes</th>
+        <th>Dislikes</th>
+        <tr>
+      </tr>
+   </thead>
+    <tbody>
+      {% for i in I_Id %}
+      <a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
+      <td>{{i}}</td>
+      <td>{{i.title}}</td>
+      <td>{{i.lat}}</td>
+      <td>{{i.lng}}</td>
+      <td>{{i.likes}}</td>
+      <td>{{i.dislikes}}</td>
+      </a>
+      {% endfor %}
+     </tbody>
+  </table>
+
+
+{% endblock %}

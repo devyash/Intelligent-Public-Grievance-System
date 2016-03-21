@@ -1,0 +1,21 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<div class="row">
+	<div class="col-md-6 col-md-offset-1 padding-top">
+		<form action="#" method="post" enctype="multipart/form-data">
+			<div class="form-group">
+				<h2>Issue Title: {{Issue.title}}</h2>
+				<h4>Edit Comment:</h4>
+				<textarea name="C_Content" cols="15" rows="4" class="form-control" >{{Comment.content}}</textarea>
+				<!--<label style="float:left;">{{C_time}}</label>
+				<label style="float:right;">{{C_author}}</label>-->
+				<button type="submit" class="btn btn-default" id="submit" type="submit" class="form-control">
+				Edit</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+
+{% endblock %}
