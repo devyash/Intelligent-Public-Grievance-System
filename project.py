@@ -25,7 +25,10 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/main')
 def home():
-	return render_template('index.html')
+    AllIssue=session.query(Issue).all()
+    AllComment=session.query(Comment).all()
+    AllVote=session.query(Vote).all()
+    return render_template('index.html', Issue=AllIssue)
 
 @app.route('/login')
 def login():

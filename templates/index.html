@@ -2,4 +2,8 @@
 {% block content %}
 {% include "header.html" %}
 <h3>MAIN PAGE!</h3>
+{% for i in Issue%}
+ {{i.title}}
+{% endfor%}
+
 {% endblock %}

@@ -57,5 +57,5 @@ class Vote(Base):
 	dislike=Column(Integer,default=0)
 	#time=Column(Date)	
 
-engine=create_engine('sqlite:///IPGS.db')
+engine=create_engine('postgresql://scott:tiger@localhost:5432/IPGS.db')
 Base.metadata.create_all(engine)
