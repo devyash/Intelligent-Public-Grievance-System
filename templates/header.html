@@ -1,7 +1,7 @@
 <!--<div class="row top-menu">
 	<div class="col-md-6">
 		<a href="{{url_for('home')}}">
-			<span class="glyphicon glyphicon-home" aria-hidden="true"></span>Show All Issues
+			<span class="glyphicon glyphicon-home" aria-hidden="true"></span>Show All Issue
 		</a>
 	</div>
 	<div class="col-md-6 text-right">
@@ -26,16 +26,16 @@
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">ME <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="{{url_for('showMyIssues')}}">My Issues</a></li>
-            <li><a href="{{url_for('showMyComments')}}">My Comments</a></li>
+            <li><a href="{{url_for('showMyIssue')}}">My Issue</a></li>
+            <li><a href="{{url_for('showMyComment')}}">My Comment</a></li>
           </ul>
         </li>
-        <li><a href="{{url_for('newIssues')}}">Create New Issue</a></li>
+        <li><a href="{{url_for('newIssue')}}">Create New Issue</a></li>
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Nearby<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="{{url_for('showNearbyIssuesMap')}}">View Map</a></li>
-            <li><a href="{{url_for('showNearbyIssuesList')}}">View List</a></li>
+            <li><a href="{{url_for('showNearbyIssueMap')}}">View Map</a></li>
+            <li><a href="{{url_for('showNearbyIssueList')}}">View List</a></li>
           </ul>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -45,3 +45,17 @@
     </div>
   </div>
 </nav>
+
+<div class = 'flash'>
+          {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          
+        <ul>
+        {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+</div>
