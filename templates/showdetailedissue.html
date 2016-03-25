@@ -1,6 +1,46 @@
 {% extends "main.html" %}
 {% block content %}
 {% include "header.html" %}
+<script>
+function initialize()
+{
+ //loading map and setting the marker
+  var mapProp = {
+    center: new google.maps.LatLng({{Issue.lat}},{{Issue.lng}}),
+    zoom:14,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  };
+  var map = new google.maps.Map(document.getElementById("map"),mapProp);
+  
+  
+  var marker=new google.maps.Marker({
+  position:new google.maps.LatLng({{Issue.lat}},{{Issue.lng}})
+  });
+
+  marker.setMap(map);
+
+}
+
+
+function loadScript()
+{
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.src = "http://maps.googleapis.com/maps/api/js?key=AIzaSyAqHobDCEl3R6O-bMyfRFz7hjQVx4LP3FI&sensor=true&callback=initialize";
+  document.body.appendChild(script);
+}
+
+window.onload = loadScript;
+
+</script>
+
+<h2>Issue Title: {{Issue.title}}</h2>
+<div  class="map-responsive" id="map" style="width:500px;height:380px;"></div>
+Discription:{{Issue.content}}<br>
+{{Author.name}}<br>
+Likes:{{like}}<br>Dislikes:{{dislike}} <br>
+<a href = "{{url_for('editIssue', I_Id=Issue.id)}}">Edit</a><br>
+<a href = "{{url_for('deleteIssue', I_Id=Issue.id)}}">Delete</a><br>
 
 
 
@@ -10,6 +50,7 @@
 				<div class="col-md-1"></div>
 					<div class="col-md-10 restaurant-list">
 						<h3>{{c.title}}</h3>
+						<h3>{{c.content}}</h3>
 					</div>
 				<div class="col-md-1"></div>
 			</div>

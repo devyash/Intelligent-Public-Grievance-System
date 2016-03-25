@@ -30,8 +30,8 @@ class Issue(Base):
 	lat=Column(Numeric,nullable=False)
 	lng=Column(Numeric,nullable=False)
 	image=Column(String(250))
-	anonFlag=Column(Boolean,default=False)
-	type=Column(Integer,nullable=False)
+	anonFlag=Column(Integer,default=0)
+	type=Column(Integer,nullable=0)
 	#time=Column(Date)
 	#visible=Column(Boolean,default=True)
 

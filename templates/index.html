@@ -3,7 +3,11 @@
 {% include "header.html" %}
 <h3>MAIN PAGE!</h3>
 {% for i in Issue%}
- {{i.title}}
+  <a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
+      {{i.title}}<br>
+      {{i.lat}}<br>
+      {{i.lng}}<br>
+      </a>
 {% endfor%}
 
 {% endblock %}

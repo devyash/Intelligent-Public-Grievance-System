@@ -71,6 +71,7 @@ def newIssue():
 def  showDetailedIssue(I_Id):
     showDetailedIssue = session.query(Issue).filter_by(id = I_Id).one()
     showDetailedComment = session.query(Comment).filter_by(id = I_Id).order_by(asc(Comment.sqNo)).all()
+    showDetailedUser = session.query(User).filter_by(id= showDetailedIssue.author).one()
     #temporarily harcoding the likes and dislikes part
     like=2
     dislike=2
@@ -78,11 +79,11 @@ def  showDetailedIssue(I_Id):
     #showDetailedVote = session,query(func.count())   SELECT count(*) 
     #    FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true)
     # AS likes  GROUP BY V_flag;""",(I_Id,))
-    return render_template('showdetailedissue.html', Issue=showDetailedIssue, Comment=showDetailedComment, like=like, dislike=dislike)
+    return render_template('showdetailedissue.html', Issue=showDetailedIssue, Comment=showDetailedComment, like=like, dislike=dislike, Author=showDetailedUser)
 
 @app.route('/issue/<int:I_Id>/edit/', methods=['GET', 'POST'])
 def editIssue(I_Id):
-    editedIssue = session.query(Restaurant).filter_by(id=I_Id).one()
+    editedIssue = session.query(Issue).filter_by(id=I_Id).one()
     if request.method == 'POST':
         if request.form['I_Title']:
             editedIssue.title = request.form['I_Title']

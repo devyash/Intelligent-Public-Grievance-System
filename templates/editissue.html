@@ -23,7 +23,7 @@ function initialize()
   });
 
 //Code to set the anon flag
-	if('{{Issue.anonFlag}}'=='True'){
+	if('{{Issue.anonFlag}}'==1){
 		check();
 	}
 	else{
@@ -68,11 +68,11 @@ window.onload = loadScript;
 
 //functions to set the anon flag
 function check() {
-    document.getElementsByName("I_AnonFlag")[0].checked = true;
+    document.getElementsById("I_AnonFlag1")[0].checked = true;
 }
 
 function uncheck() {
-    document.getElementsByName("I_AnonFlag")[0].checked = false;
+    document.getElementsById("I_AnonFlag2")[0].checked = false;
 }
 
 //function to set IssueType to selected issue type in the db
@@ -125,7 +125,8 @@ function setissuetype(){
   				</select>
 
 				<label for="I_AnonFlag">Sensitive issue?</label>
-				<input type="checkbox" name="I_AnonFlag" value="True">Keep it annoymous				
+				<input type="radio" name="I_AnonFlag" value=1 id="I_AnonFlag1"checked=true>Keep it annoymous
+			    <input type="radio" name="I_AnonFlag" value=0 id="I_AnonFlag2" checked=false>Show your name			
 				<label for="anonymous">Don't show my name on this issue or show it on my profile page. But email me when someone comments on it</label>
 
 				<label for="pic">Photos</label>
