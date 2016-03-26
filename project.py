@@ -189,7 +189,8 @@ def showMyComment():
 
 @app.route('/issue/nearby/map/', methods=['GET','POST'])
 def showNearbyIssueMap():
-    return render_template('shownearbyissuemap.html')
+    nearbyIssue=session.query(Issue).all()
+    return render_template('shownearbyissuemap.html', Issue=nearbyIssue)
 
 @app.route('/issue/nearby/list/', methods=['GET','POST'])
 def showNearbyIssueList():
