@@ -6,7 +6,7 @@ Flask-Login==0.3.2
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.12
 Jinja2==2.7.2
-Landscape-Client==14.12
+
 MarkupSafe==0.18
 PAM==0.4.2
 PyYAML==3.10
