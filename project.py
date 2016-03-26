@@ -189,12 +189,30 @@ def showMyComment():
 
 @app.route('/issue/nearby/map/', methods=['GET','POST'])
 def showNearbyIssueMap():
-    nearbyIssue=session.query(Issue).all()
-    return render_template('shownearbyissuemap.html', Issue=nearbyIssue)
+    if request.method == 'POST':
+       #Setting distance as 1KM radius 0.00654=1Km
+        latmax=float(request.form['I_Lat'])+0.00654
+        latmin=float(request.form['I_Lat'])-0.00654
+        lngmax=float(request.form['I_Lng'])+0.00654
+        lngmin=float(request.form['I_Lng'])-0.00654
+        nearbyIssue=session.query(Issue).filter(Issue.lat<latmax,Issue.lat>latmin, Issue.lng<lngmax,Issue.lng>lngmin).all()
+        return render_template('shownearbyissuemap.html', Issue=nearbyIssue,CurrentLat=request.form['I_Lat'],CurrentLng=request.form['I_Lng'])
+    else:
+        return render_template('getlocation.html')
+
 
 @app.route('/issue/nearby/list/', methods=['GET','POST'])
 def showNearbyIssueList():
-    return render_template('shownearbyissuelist.html')
+    if request.method == 'POST':
+       #Setting distance as 1KM radius 0.00654=1Km
+        latmax=float(request.form['I_Lat'])+0.00654
+        latmin=float(request.form['I_Lat'])-0.00654
+        lngmax=float(request.form['I_Lng'])+0.00654
+        lngmin=float(request.form['I_Lng'])-0.00654
+        nearbyIssue=session.query(Issue).filter(Issue.lat<latmax,Issue.lat>latmin, Issue.lng<lngmax,Issue.lng>lngmin).all()
+        return render_template('shownearbyissuelist.html', Issue=nearbyIssue,CurrentLat=request.form['I_Lat'],CurrentLng=request.form['I_Lng'])
+    else:
+        return render_template('getlocation.html')
 
 #-----------------------------------------------------------------------------------------------------------------    
 if __name__ == '__main__':

@@ -1,0 +1,57 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+
+<div class="row">
+	<div class="col-md-6 col-md-offset-1 padding-top">
+		<form action="#" method="post" enctype="multipart/form-data">
+			<div class="form-group">
+				<h2>Your Location</h2>
+				<label for="I_Lat">Latitude:</label>
+				<input type="text" name="I_Lat" class="form-control" id="lat">
+
+				<label for="I_Lng">Longitude:</label>
+				<input type="text" name="I_Lng" class="form-control" id="lng">
+				<button>Submit</button>
+			</div>
+		</form>
+	</div>
+</div>		
+
+<script>
+var x = document.getElementById("demo");
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else { 
+        x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+}
+
+function showPosition(position) {
+    document.getElementById("lat").value =position.coords.latitude;
+    document.getElementById("lng").value =position.coords.longitude;  
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            x.innerHTML = "User denied the request for Geolocation."
+            break;
+        case error.POSITION_UNAVAILABLE:
+            x.innerHTML = "Location information is unavailable."
+            break;
+        case error.TIMEOUT:
+            x.innerHTML = "The request to get user location timed out."
+            break;
+        case error.UNKNOWN_ERROR:
+            x.innerHTML = "An unknown error occurred."
+            break;
+    }
+
+}
+
+window.onload =getLocation;
+</script>
+{% endblock %}
