@@ -23,7 +23,7 @@ function initialize()
   });
 
 //Code to set the anon flag
-	if('{{Issue.anonFlag}}'==1){
+	if({{Issue.anonFlag}}==1){
 		check();
 	}
 	else{
@@ -68,17 +68,19 @@ window.onload = loadScript;
 
 //functions to set the anon flag
 function check() {
-    document.getElementsById("I_AnonFlag1")[0].checked = true;
+   document.getElementById("I_AnonFlag1").checked = true;
+   document.getElementById("I_AnonFlag2").checked = false;
 }
 
 function uncheck() {
-    document.getElementsById("I_AnonFlag2")[0].checked = false;
+    document.getElementById("I_AnonFlag2").checked = true;
+    document.getElementById("I_AnonFlag1").checked = false;
 }
 
 //function to set IssueType to selected issue type in the db
 function setissuetype(){
 	var type=({{Issue.type}}-1).toString();
-	document.getElementsByName("I_Type")[0].selectedIndex = type;
+	document.getElementById("I_TypeA").selectedIndex = type;
 }
 </script>
 
@@ -118,7 +120,7 @@ function setissuetype(){
 				<textarea name="I_Content" cols="15" rows="4" class="form-control" >{{Issue.content}}</textarea>
 
 				<label for="I_Type">Type:</label>
-				<select name="I_Type"  class="form-control">
+				<select name="I_Type" id="I_TypeA" class="form-control">
     				<option value="1">Road Block</option>
     				<option value="2">Wrong Parking</option>
     				<option value="3">Illegal Garbage Dump</option>
@@ -136,7 +138,7 @@ function setissuetype(){
 					<br><br></div>
 
 				<button type="submit" class="btn btn-default" id="submit" type="submit" class="form-control">
-				create</button>
+				Edit</button>
 				
 			</div>
 		</form>

@@ -24,7 +24,7 @@
     <tbody>
       {% for i in I_Id %}
       <a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
-      <td>{{i}}</td>
+      <td>{{i.id}}</td>
       <td>{{i.title}}</td>
       <td>{{i.lat}}</td>
       <td>{{i.lng}}</td>

@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
-from Db_setup import Base, Issue, Vote, Comment, User
+from DB_setup import Base, Issue, Vote, Comment, User
 # Connect to Database and create database session
 engine = create_engine('sqlite:///IPGS.db')
 Base.metadata.bind = engine

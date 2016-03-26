@@ -1,6 +1,8 @@
 {% extends "main.html" %}
 {% block content %}
 {% include "header.html" %}
+
+
 <script>
 function initialize()
 {
@@ -34,29 +36,30 @@ window.onload = loadScript;
 
 </script>
 
-<h2>Issue Title: {{Issue.title}}</h2>
-<div  class="map-responsive" id="map" style="width:500px;height:380px;"></div>
-Discription:{{Issue.content}}<br>
-{{Author.name}}<br>
-Likes:{{like}}<br>Dislikes:{{dislike}} <br>
+<h3>Issue {{Issue.id}}: {{Issue.title}}</h3>
+<div  class="map-responsive" id="map" style="width:100%;height:240px;"></div><br>
+<b>Discription:<b>
+<textarea readonly rows="4" cols="15" class="form-control">{{Issue.content}}</textarea><br>
+<b>Author:</b><br>
+<label>{{Author}}</label><br>
+<b>Likes:</b>&emsp;&emsp;&emsp;<b>Dislikes:</b><br>
+<label>{{like}}</label>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<label>{{dislike}}</label><br>
+<b>Type:</b><br>
+<label>{{Issue.type}}</label><br>
+<b>AnonFlag:</b><br>
+<label>{{Issue.anonFlag}}</label><br>
 <a href = "{{url_for('editIssue', I_Id=Issue.id)}}">Edit</a><br>
 <a href = "{{url_for('deleteIssue', I_Id=Issue.id)}}">Delete</a><br>
 
-
+<b>Comments:</b><br>
 
 {% for c in Comment %}
-		
-			<div class="row">
-				<div class="col-md-1"></div>
-					<div class="col-md-10 restaurant-list">
-						<h3>{{c.title}}</h3>
-						<h3>{{c.content}}</h3>
-					</div>
-				<div class="col-md-1"></div>
-			</div>
+{{c.content}}&emsp;&emsp;&emsp; <a href = "{{url_for('editComment', C_Id=Issue.id, C_SqNo=c.sqNo)}}">edit</a>&emsp;&emsp;&emsp; <a href = "{{url_for('deleteComment', C_Id=Issue.id, C_SqNo=c.sqNo)}}">Delete</a>
+
+<br> 
 		
 	{% endfor %}
-
+<a href = "{{url_for('newComment', I_Id=Issue.id)}}">Add Comment</a>
 
 
 

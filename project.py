@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, jsonify, url_for, f
 import os,sys
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
-from Db_setup import Base, Issue, Vote, Comment, User
+from DB_setup import Base, Issue, Vote, Comment, User
 
 from flask import session as login_session
 
@@ -28,7 +28,8 @@ def home():
     AllIssue=session.query(Issue).all()
     AllComment=session.query(Comment).all()
     AllVote=session.query(Vote).all()
-    return render_template('index.html', Issue=AllIssue)
+    AllUser=session.query(User).all()
+    return render_template('index.html', Issue=AllIssue, Vote=AllVote, User=AllUser)
 
 @app.route('/login')
 def login():
@@ -71,7 +72,8 @@ def newIssue():
 def  showDetailedIssue(I_Id):
     showDetailedIssue = session.query(Issue).filter_by(id = I_Id).one()
     showDetailedComment = session.query(Comment).filter_by(id = I_Id).order_by(asc(Comment.sqNo)).all()
-    showDetailedUser = session.query(User).filter_by(id= showDetailedIssue.author).one()
+    showDetailedUser= session.query(User).filter_by(id= showDetailedIssue.author).one()
+    Author=showDetailedUser.name
     #temporarily harcoding the likes and dislikes part
     like=2
     dislike=2
@@ -79,7 +81,9 @@ def  showDetailedIssue(I_Id):
     #showDetailedVote = session,query(func.count())   SELECT count(*) 
     #    FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true)
     # AS likes  GROUP BY V_flag;""",(I_Id,))
-    return render_template('showdetailedissue.html', Issue=showDetailedIssue, Comment=showDetailedComment, like=like, dislike=dislike, Author=showDetailedUser)
+    if showDetailedIssue.anonFlag == 1:
+       Author="Anonymous"
+    return render_template('showdetailedissue.html', Issue=showDetailedIssue, Comment=showDetailedComment, like=like, dislike=dislike, Author=Author)
 
 @app.route('/issue/<int:I_Id>/edit/', methods=['GET', 'POST'])
 def editIssue(I_Id):
@@ -104,7 +108,7 @@ def editIssue(I_Id):
     else:
         return render_template('editissue.html', Issue=editedIssue)
 
-# Delete a restaurant
+# Delete a Issue
 @app.route('/issue/<int:I_Id>/delete/', methods=['GET', 'POST'])
 def deleteIssue(I_Id):
     issuetodelete = session.query(Issue).filter_by(id = I_Id).one()
@@ -119,9 +123,11 @@ def deleteIssue(I_Id):
 #-----------------------------------------------------------------------------------------------------------------
 @app.route('/comment/<int:I_Id>/new/', methods=['GET', 'POST'])
 def newComment(I_Id):
+    login_session['U_Id']=1
     issuetocomment= session.query(Issue).filter_by(id = I_Id).one()
+    usertocomment=session.query(User).filter_by(id= login_session['U_Id']).one()
     if request.method == 'POST':
-        newComment = Comment(content=request.form['I_Content'],id=I_Id,author=login_session['U_Id'])
+        newComment = Comment(content=request.form['C_Content'], user=usertocomment, issue=issuetocomment)
         session.add(newComment)
         session.commit()
         return redirect(url_for('showDetailedIssue',I_Id=issuetocomment.id ))
@@ -130,24 +136,34 @@ def newComment(I_Id):
 
 @app.route('/comment/<int:C_Id>/<int:C_SqNo>/edit/', methods=['GET', 'POST'])
 def editComment(C_Id,C_SqNo):
-    issuetocommentedit= session.query(Issue).filter_by(id = C_Id).one()
-    editComment=session.query(Comment).filter_by(id=C_Id).filter_by(author=login_session['U_Id']).filter_by(sqNo=SqNo).one()
+    login_session['U_Id']=1
+    issuetocomment= session.query(Issue).filter_by(id = C_Id).one()
+    usertocomment=session.query(User).filter_by(id= login_session['U_Id']).one()
+    editComment=session.query(Comment).filter_by(id=C_Id).filter_by(author=login_session['U_Id']).filter_by(sqNo=C_SqNo).one()
     if request.method == 'POST':
         if request.form['C_Content']:
             editComment.content = request.form['C_Content']
+            session.add(editComment)
+            session.commit()
         return redirect(url_for('showDetailedIssue',I_Id=C_Id ))
     else:
         #part to check if the user is the author of the comment
-        return render_template('editcomment.html',Comment=editComment,Issue=issuetocommentedit)
+        return render_template('editcomment.html',Comment=editComment,Issue=issuetocomment)
 
 @app.route('/comment/<int:C_Id>/<int:C_SqNo>/delete/', methods=['GET', 'POST'])
 def deleteComment(C_Id,C_SqNo):
-    deleteComment=session.query(Comment).filter_by(id=C_Id).filter_by(author=login_session['U_Id']).filter_by(sqNo=SqNo).one()
+    login_session['U_Id']=1
+    issuetocomment= session.query(Issue).filter_by(id = C_Id).one()
+    usertocomment=session.query(User).filter_by(id= login_session['U_Id']).one()
+    commenttodelete=session.query(Comment).filter_by(id=C_Id).filter_by(author=login_session['U_Id']).filter_by(sqNo=C_SqNo).one()
     if request.method == 'POST':
-        return redirect(url_for('showDetailedIssue',I_Id=C_Id ))
+        session.delete(commenttodelete)
+        # flash('%s Successfully Deleted' % restaurantToDelete.name)
+        session.commit()
+        return redirect(url_for('showDetailedIssue',I_Id=commenttodelete.id ))
     else:
         #part to check if the user is the author of the comment
-        return render_template('deletecomment.html',Comment=deleteComment)
+        return render_template('deletecomment.html', Comment=commenttodelete)
 
 
 

@@ -1,13 +1,44 @@
 {% extends "main.html" %}
 {% block content %}
 {% include "header.html" %}
-<h3>MAIN PAGE!</h3>
-{% for i in Issue%}
-  <a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
-      {{i.title}}<br>
-      {{i.lat}}<br>
-      {{i.lng}}<br>
-      </a>
-{% endfor%}
+
+<BR>
+<h1>All Issues</h1>
+ <div class="table-responsive">          
+  <table class="table" align="right">
+    <thead>
+      <tr rowspan="2">
+        <th>I_Id:</th>
+        <th>Title</th>
+        <th colspan="2">Location</th>
+        <tr>
+        <td></td>
+        <td></td>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <tr>
+      </tr>
+   </thead>
+    <tbody>
+      {% for i in Issue %}
+      <tr>
+      <td><a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
+{{i.id}}</a></td>
+      <td><a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
+{{i.title}}</a></td>
+      <td><a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
+{{i.lat|round(3, 'floor')}}</a></td>
+      <td><a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
+{{i.lng|round(3, 'floor')}}</a></td>
+      
+      </tr>
+      {% endfor %}
+
+     </tbody>
+  </table>
+
+
+
+
 
 {% endblock %}
