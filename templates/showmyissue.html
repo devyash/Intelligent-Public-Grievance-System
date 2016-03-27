@@ -10,29 +10,35 @@
         <th>I_Id:</th>
         <th>Title</th>
         <th colspan="2">Location</th>
-        <th colspan="2">Votes</th>
+        <th colspan="2">Modify</th>
         <tr>
         <td></td>
         <td></td>
         <th>Latitude</th>
         <th>Longitude</th>
-        <th>Likes</th>
-        <th>Dislikes</th>
+        <th></th>
+        <th></th>
         <tr>
       </tr>
-   </thead>
+    </thead>
     <tbody>
-      {% for i in I_Id %}
-      <a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
-      <td>{{i.id}}</td>
-      <td>{{i.title}}</td>
-      <td>{{i.lat}}</td>
-      <td>{{i.lng}}</td>
-      <td>{{i.likes}}</td>
-      <td>{{i.dislikes}}</td>
-      </a>
-      {% endfor %}
-     </tbody>
+    {% for i in Issue %}
+      <tr>
+         <td><a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
+              {{i.id}}</a></td>
+         <td><a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
+              {{i.title}}</a></td>
+         <td><a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
+              {{i.lat|round(3, 'floor')}}</a></td>
+         <td><a href = "{{url_for('showDetailedIssue', I_Id = i.id)}}">
+              {{i.lng|round(3, 'floor')}}</a></td>
+         <td><a href = "{{url_for('editIssue', I_Id=i.id)}}">Edit</a>
+              </td>
+         <td><a href = "{{url_for('deleteIssue', I_Id=i.id)}}">Delete</a>
+              </td>
+      </tr>
+    {% endfor %}
+    </tbody>
   </table>
 
 

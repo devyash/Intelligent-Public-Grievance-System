@@ -1,6 +1,7 @@
 {% extends "main.html" %}
 {% block content %}
 {% include "header.html" %}
+{% if Issue%}
   <script>
 function initialize()
 {
@@ -48,6 +49,10 @@ window.onload = loadScript;
 </script>
 <div id="map" style="width:100%; height:500px;">
 </div>
+{% endif %}
+{% if not Issue %}
+<h1> No NearBy Issues :( </h1>
+{% endif %}
 
 
 {% endblock %}

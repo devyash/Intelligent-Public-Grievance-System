@@ -3,8 +3,22 @@ import os,sys
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from DB_setup import Base, Issue, Vote, Comment, User
-
 from flask import session as login_session
+
+
+import random
+import string
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+import httplib2
+import json
+from flask import make_response
+import requests
+
+CLIENT_ID = json.loads(
+    open('client_secrets.json', 'r').read())['web']['client_id']
+APPLICATION_NAME = "IPGS"
+
 
 app = Flask(__name__)
 
@@ -171,6 +185,7 @@ def deleteComment(C_Id,C_SqNo):
 
 @app.route('/issue/my/', methods=['GET','POST'])
 def  showMyIssue(): 
+    login_session['U_Id']=2
     if login_session['U_Id']!=None:
         myissue = session.query(Issue).filter_by(author=login_session['U_Id']).all()
         return render_template('showmyissue.html', Issue=myissue)
@@ -179,6 +194,7 @@ def  showMyIssue():
 
 @app.route('/comment/my/', methods=['GET','POST'])
 def showMyComment():
+    login_session['U_Id']=1
     if login_session['U_Id']!=None:
         mycomment = session.query(Comment).filter_by(author=login_session['U_Id']).all()
         return render_template('showmycomment.html', Comment=mycomment)
@@ -210,7 +226,7 @@ def showNearbyIssueList():
         lngmax=float(request.form['I_Lng'])+0.00654
         lngmin=float(request.form['I_Lng'])-0.00654
         nearbyIssue=session.query(Issue).filter(Issue.lat<latmax,Issue.lat>latmin, Issue.lng<lngmax,Issue.lng>lngmin).all()
-        return render_template('shownearbyissuelist.html', Issue=nearbyIssue,CurrentLat=request.form['I_Lat'],CurrentLng=request.form['I_Lng'])
+        return render_template('shownearbyissuelist.html', Issue=nearbyIssue)
     else:
         return render_template('getlocation.html')
 
@@ -315,9 +331,9 @@ def gdisconnect():
     print login_session['username']
     if access_token is None:
         print 'Access Token is None'
-            response = make_response(json.dumps('Current user not connected.'), 401)
-            response.headers['Content-Type'] = 'application/json'
-            return response
+        response = make_response(json.dumps('Current user not connected.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]

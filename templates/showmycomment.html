@@ -1,8 +1,26 @@
 {% extends "main.html" %}
 {% block content %}
 {% include "header.html" %}
-<BR>
-<h1>LIST OF COMMENTS with edit and delete options</h1>
-
-
+<div class="table-responsive">          
+  <table class="table" align="right">
+	<thead>
+		<tr>
+		<th>Issue Id:</th>
+		<th>Content</th>
+		<th>Edit</th>
+		<th>Delete</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for c in Comment %}
+		<tr>
+		<td>{{c.id}}</td>
+		<td>{{c.content}}</td>
+		<td><a href = "{{url_for('editComment', C_Id=c.id, C_SqNo=c.sqNo)}}">Edit</a></td>
+		<td> <a href = "{{url_for('deleteComment', C_Id=c.id, C_SqNo=c.sqNo)}}">Delete</a></td>
+		</tr> 
+		{% endfor %}
+    </tbody>
+</table>
+</div>
 {% endblock %}
