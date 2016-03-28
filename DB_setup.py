@@ -12,6 +12,7 @@ class User(Base):
 	id=Column(Integer,primary_key=True)
 	email=Column(String(80),unique=True)
 	name=Column(String(80),nullable=False)
+	password=Column(String(255),unique=True)
 	#gender=Column(String(8),nullable=False)
 	#strAdr=Column(String(255))
 	#city=Column(String(10),nullable=False)

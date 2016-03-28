@@ -8,15 +8,15 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-user1=User(id=1, email="devyashsanghai@gmail.com", name="Devyash")
+user1=User(id=1, email="devyashsanghai@gmail.com", name="Devyash", password="ABCD")
 session.add(user1)
 session.commit()
 
-user2=User(email="abada@gmail.com", name="Abada")
+user2=User(email="abada@gmail.com", name="Abada", password="XYZ")
 session.add(user2)
 session.commit()
 
-user3=User(email="ka@gmail.com", name="Ka")
+user3=User(email="ka@gmail.com", name="Ka", password="NASND")
 session.add(user3)
 session.commit()
 

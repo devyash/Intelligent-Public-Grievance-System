@@ -15,6 +15,7 @@ import json
 from flask import make_response
 import requests
 
+
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "IPGS"
@@ -35,149 +36,229 @@ app = Flask(__name__)
 #APP_ROOT=os.path.dirname(os.path.abspath(__file__))
 
 #-----------------------------------------------------------------------------------------------------------------
+    
+
 #MAIN PAGE
 @app.route('/')
 @app.route('/main')
 def home():
-    AllIssue=session.query(Issue).all()
-    AllComment=session.query(Comment).all()
-    AllVote=session.query(Vote).all()
-    AllUser=session.query(User).all()
-    return render_template('index.html', Issue=AllIssue, Vote=AllVote, User=AllUser)
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
+        return redirect(url_for('login'))
+    else:
+        AllIssue=session.query(Issue).all()
+        AllComment=session.query(Comment).all()
+        AllVote=session.query(Vote).all()
+        AllUser=session.query(User).all()
+        return render_template('index.html', Issue=AllIssue, Vote=AllVote, User=AllUser)
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('index.html')
+    error = None
+    if request.method == 'POST':
+         AllUser=session.query(User).all()
+         for u in AllUser:
+            if( request.form['username']==u.name and request.form['password']==u.password):
+                login_session['logged_in'] = True
+                flash('You were logged in.')
+                login_session['U_Id']=u.id
+                return redirect(url_for('home'))
+         error = 'Invalid Credentials. Please try again.'
+         return render_template('normallogin.html', error=error)
+    else:
+         return render_template('normallogin.html', error=error)
+
+@app.route('/logout')
+def logout():
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
+        return redirect(url_for('login'))
+    else:
+        login_session.pop('logged_in', None)
+        flash('You were logged out.')
+        return redirect(url_for('welcome'))
+
+
+@app.route('/welcome')
+def welcome():
+    return render_template('welcome.html')
+#--------------------------------------------------------------------------------------
+@app.route('/user/new/', methods=['GET', 'POST'])
+def newuser():
+    if 'logged_in' in login_session:
+        flash('You need to logout first.')
+        return redirect(url_for('logout'))
+    else:
+        if request.method == 'POST':
+            newuser=User(email=request.form['Email'],name=request.form['UserName'],password=request.form['Password'])
+            login_session['U_Id'] =newuser.id
+            flash('Hello %s'%request.form['UserName'])
+            return render_template('normallogin.html')  
+        else:
+            return render_template('newuser.html')
+
+@app.route('/user/edit', methods=['GET', 'POST'])
+def edituser():
+    return render_template('edituser.html')
+
 
 #------------------------------------------------------------------------------------------------------------------
 @app.route('/issue/new/', methods=['GET', 'POST'])
 def newIssue():
-    login_session['U_Id']=1
-    if request.method == 'POST':
-        newIssue = Issue(author=login_session['U_Id'],title=request.form['I_Title'], content=request.form['I_Content'], 
-                         lat=request.form['I_Lat'], lng=request.form['I_Lng'],
-                        image="url for image",type = request.form['I_Type'],  anonFlag=request.form['I_AnonFlag']) 
-        session.add(newIssue)
-        session.commit()
-        #flash('New Restaurant %s Successfully Created' % newRestaurant.name)
-        print request.form['I_Lat']
-        print request.form['I_Lng']
-        print request.form['I_Title']
-        print request.form['I_Content']
-        print request.form['I_Type']
-        print request.form['I_AnonFlag']
- #       target=os.path.join(APP_ROOT,'images/')
-        #print target
- #       if not os.path.isdir(target):
- #          os.mkdir(target)
- #      for file in request.files.getlist("file"):
- #           print file
- #          filename=file.filename
-            #os.rename(filename,request.form['I_Title'])
- #           destination="/".join([target,filename])
-           # print destination
- #           file.save(destination)
-            
-        return redirect(url_for('home'))
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
+        return redirect(url_for('login'))
     else:
-        return render_template('newIssue.html')
+        #login_session['U_Id']=1
+        if request.method == 'POST':
+            newIssue = Issue(author=login_session['U_Id'],title=request.form['I_Title'], content=request.form['I_Content'], 
+                             lat=request.form['I_Lat'], lng=request.form['I_Lng'],
+                            image="url for image",type = request.form['I_Type'],  anonFlag=request.form['I_AnonFlag']) 
+            session.add(newIssue)
+            session.commit()
+            #flash('New Restaurant %s Successfully Created' % newRestaurant.name)
+            print request.form['I_Lat']
+            print request.form['I_Lng']
+            print request.form['I_Title']
+            print request.form['I_Content']
+            print request.form['I_Type']
+            print request.form['I_AnonFlag']
+     #       target=os.path.join(APP_ROOT,'images/')
+            #print target
+     #       if not os.path.isdir(target):
+     #          os.mkdir(target)
+     #      for file in request.files.getlist("file"):
+     #           print file
+     #          filename=file.filename
+                #os.rename(filename,request.form['I_Title'])
+     #           destination="/".join([target,filename])
+               # print destination
+     #           file.save(destination)
+                
+            return redirect(url_for('home'))
+        else:
+            return render_template('newIssue.html')
 
 @app.route('/issue/<int:I_Id>/view')
 def  showDetailedIssue(I_Id):
-    showDetailedIssue = session.query(Issue).filter_by(id = I_Id).one()
-    showDetailedComment = session.query(Comment).filter_by(id = I_Id).order_by(asc(Comment.sqNo)).all()
-    showDetailedUser= session.query(User).filter_by(id= showDetailedIssue.author).one()
-    Author=showDetailedUser.name
-    #temporarily harcoding the likes and dislikes part
-    like=2
-    dislike=2
-    #showDetailedVote = session.query(Issue).filter_by(id = I_Id).all()
-    #showDetailedVote = session,query(func.count())   SELECT count(*) 
-    #    FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true)
-    # AS likes  GROUP BY V_flag;""",(I_Id,))
-    if showDetailedIssue.anonFlag == 1:
-       Author="Anonymous"
-    return render_template('showdetailedissue.html', Issue=showDetailedIssue, Comment=showDetailedComment, like=like, dislike=dislike, Author=Author)
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
+        return redirect(url_for('login'))
+    else:
+        showDetailedIssue = session.query(Issue).filter_by(id = I_Id).one()
+        showDetailedComment = session.query(Comment).filter_by(id = I_Id).order_by(asc(Comment.sqNo)).all()
+        showDetailedUser= session.query(User).filter_by(id= showDetailedIssue.author).one()
+        Author=showDetailedUser.name
+        #temporarily harcoding the likes and dislikes part
+        like=2
+        dislike=2
+        #showDetailedVote = session.query(Issue).filter_by(id = I_Id).all()
+        #showDetailedVote = session,query(func.count())   SELECT count(*) 
+        #    FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true)
+        # AS likes  GROUP BY V_flag;""",(I_Id,))
+        if showDetailedIssue.anonFlag == 1:
+           Author="Anonymous"
+        return render_template('showdetailedissue.html', Issue=showDetailedIssue, Comment=showDetailedComment, like=like, dislike=dislike, Author=Author)
 
 @app.route('/issue/<int:I_Id>/edit/', methods=['GET', 'POST'])
 def editIssue(I_Id):
-    editedIssue = session.query(Issue).filter_by(id=I_Id).one()
-    if request.method == 'POST':
-        if request.form['I_Title']:
-            editedIssue.title = request.form['I_Title']
-        if request.form['I_Content']:
-            editedIssue.content = request.form['I_Content']
-        if request.form['I_Lat']:
-            editedIssue.lat = request.form['I_Lat']
-        if request.form['I_Lng']:
-            editedIssue.lng = request.form['I_Lng']
-        if request.form['I_Type']:
-            editedIssue.type = request.form['I_Type']
-        if request.form['I_AnonFlag']:
-            editedIssue.anonFlag = request.form['I_AnonFlag']
-        session.add(editedIssue)
-        session.commit()        
-        #flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
-        return redirect(url_for('showDetailedIssue',I_Id=I_Id ))
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
+        return redirect(url_for('login'))
     else:
-        return render_template('editissue.html', Issue=editedIssue)
+        editedIssue = session.query(Issue).filter_by(id=I_Id).one()
+        if request.method == 'POST':
+            if request.form['I_Title']:
+                editedIssue.title = request.form['I_Title']
+            if request.form['I_Content']:
+                editedIssue.content = request.form['I_Content']
+            if request.form['I_Lat']:
+                editedIssue.lat = request.form['I_Lat']
+            if request.form['I_Lng']:
+                editedIssue.lng = request.form['I_Lng']
+            if request.form['I_Type']:
+                editedIssue.type = request.form['I_Type']
+            if request.form['I_AnonFlag']:
+                editedIssue.anonFlag = request.form['I_AnonFlag']
+            session.add(editedIssue)
+            session.commit()        
+            #flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
+            return redirect(url_for('showDetailedIssue',I_Id=I_Id ))
+        else:
+            return render_template('editissue.html', Issue=editedIssue)
 
 # Delete a Issue
 @app.route('/issue/<int:I_Id>/delete/', methods=['GET', 'POST'])
 def deleteIssue(I_Id):
-    issuetodelete = session.query(Issue).filter_by(id = I_Id).one()
-    if request.method == 'POST':
-        session.delete(issuetodelete)
-        # flash('%s Successfully Deleted' % restaurantToDelete.name)
-        session.commit()
-        return redirect(url_for('home'))
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
+        return redirect(url_for('login'))
     else:
-        return render_template('deleteissue.html', Issue=issuetodelete)
+        issuetodelete = session.query(Issue).filter_by(id = I_Id).one()
+        if request.method == 'POST':
+            session.delete(issuetodelete)
+            # flash('%s Successfully Deleted' % restaurantToDelete.name)
+            session.commit()
+            return redirect(url_for('home'))
+        else:
+            return render_template('deleteissue.html', Issue=issuetodelete)
 
 #-----------------------------------------------------------------------------------------------------------------
 @app.route('/comment/<int:I_Id>/new/', methods=['GET', 'POST'])
 def newComment(I_Id):
-    login_session['U_Id']=1
-    issuetocomment= session.query(Issue).filter_by(id = I_Id).one()
-    usertocomment=session.query(User).filter_by(id= login_session['U_Id']).one()
-    if request.method == 'POST':
-        newComment = Comment(content=request.form['C_Content'], user=usertocomment, issue=issuetocomment)
-        session.add(newComment)
-        session.commit()
-        return redirect(url_for('showDetailedIssue',I_Id=issuetocomment.id ))
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
+        return redirect(url_for('login'))
     else:
-        return render_template('newcomment.html',Issue=issuetocomment)
+        #login_session['U_Id']=1
+        issuetocomment= session.query(Issue).filter_by(id = I_Id).one()
+        usertocomment=session.query(User).filter_by(id= login_session['U_Id']).one()
+        if request.method == 'POST':
+            newComment = Comment(content=request.form['C_Content'], user=usertocomment, issue=issuetocomment)
+            session.add(newComment)
+            session.commit()
+            return redirect(url_for('showDetailedIssue',I_Id=issuetocomment.id ))
+        else:
+            return render_template('newcomment.html',Issue=issuetocomment)
 
 @app.route('/comment/<int:C_Id>/<int:C_SqNo>/edit/', methods=['GET', 'POST'])
 def editComment(C_Id,C_SqNo):
-    login_session['U_Id']=1
-    issuetocomment= session.query(Issue).filter_by(id = C_Id).one()
-    usertocomment=session.query(User).filter_by(id= login_session['U_Id']).one()
-    editComment=session.query(Comment).filter_by(id=C_Id).filter_by(author=login_session['U_Id']).filter_by(sqNo=C_SqNo).one()
-    if request.method == 'POST':
-        if request.form['C_Content']:
-            editComment.content = request.form['C_Content']
-            session.add(editComment)
-            session.commit()
-        return redirect(url_for('showDetailedIssue',I_Id=C_Id ))
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
+        return redirect(url_for('login'))
     else:
-        #part to check if the user is the author of the comment
-        return render_template('editcomment.html',Comment=editComment,Issue=issuetocomment)
+        #login_session['U_Id']=1
+        issuetocomment= session.query(Issue).filter_by(id = C_Id).one()
+        usertocomment=session.query(User).filter_by(id= login_session['U_Id']).one()
+        editComment=session.query(Comment).filter_by(id=C_Id).filter_by(author=login_session['U_Id']).filter_by(sqNo=C_SqNo).one()
+        if request.method == 'POST':
+            if request.form['C_Content']:
+                editComment.content = request.form['C_Content']
+                session.add(editComment)
+                session.commit()
+            return redirect(url_for('showDetailedIssue',I_Id=C_Id ))
+        else:
+            #part to check if the user is the author of the comment
+            return render_template('editcomment.html',Comment=editComment,Issue=issuetocomment)
 
 @app.route('/comment/<int:C_Id>/<int:C_SqNo>/delete/', methods=['GET', 'POST'])
 def deleteComment(C_Id,C_SqNo):
-    login_session['U_Id']=1
-    issuetocomment= session.query(Issue).filter_by(id = C_Id).one()
-    usertocomment=session.query(User).filter_by(id= login_session['U_Id']).one()
-    commenttodelete=session.query(Comment).filter_by(id=C_Id).filter_by(author=login_session['U_Id']).filter_by(sqNo=C_SqNo).one()
-    if request.method == 'POST':
-        session.delete(commenttodelete)
-        # flash('%s Successfully Deleted' % restaurantToDelete.name)
-        session.commit()
-        return redirect(url_for('showDetailedIssue',I_Id=commenttodelete.id ))
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
+        return redirect(url_for('login'))
     else:
-        #part to check if the user is the author of the comment
-        return render_template('deletecomment.html', Comment=commenttodelete)
+        #login_session['U_Id']=1
+        issuetocomment= session.query(Issue).filter_by(id = C_Id).one()
+        usertocomment=session.query(User).filter_by(id= login_session['U_Id']).one()
+        commenttodelete=session.query(Comment).filter_by(id=C_Id).filter_by(author=login_session['U_Id']).filter_by(sqNo=C_SqNo).one()
+        if request.method == 'POST':
+            session.delete(commenttodelete)
+            # flash('%s Successfully Deleted' % restaurantToDelete.name)
+            session.commit()
+            return redirect(url_for('showDetailedIssue',I_Id=commenttodelete.id ))
+        else:
+            #part to check if the user is the author of the comment
+            return render_template('deletecomment.html', Comment=commenttodelete)
 
 
 
@@ -185,50 +266,66 @@ def deleteComment(C_Id,C_SqNo):
 
 @app.route('/issue/my/', methods=['GET','POST'])
 def  showMyIssue(): 
-    login_session['U_Id']=2
-    if login_session['U_Id']!=None:
-        myissue = session.query(Issue).filter_by(author=login_session['U_Id']).all()
-        return render_template('showmyissue.html', Issue=myissue)
-    else:
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
         return redirect(url_for('login'))
+    else:
+        #login_session['U_Id']=2
+        if login_session['U_Id']!=None:
+            myissue = session.query(Issue).filter_by(author=login_session['U_Id']).all()
+            return render_template('showmyissue.html', Issue=myissue)
+        else:
+            return redirect(url_for('login'))
 
 @app.route('/comment/my/', methods=['GET','POST'])
 def showMyComment():
-    login_session['U_Id']=1
-    if login_session['U_Id']!=None:
-        mycomment = session.query(Comment).filter_by(author=login_session['U_Id']).all()
-        return render_template('showmycomment.html', Comment=mycomment)
-    else:
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
         return redirect(url_for('login'))
+    else:
+        #login_session['U_Id']=1
+        if login_session['U_Id']!=None:
+            mycomment = session.query(Comment).filter_by(author=login_session['U_Id']).all()
+            return render_template('showmycomment.html', Comment=mycomment)
+        else:
+            return redirect(url_for('login'))
    
 #-----------------------------------------------------------------------------------------------------------------
 
 @app.route('/issue/nearby/map/', methods=['GET','POST'])
 def showNearbyIssueMap():
-    if request.method == 'POST':
-       #Setting distance as 1KM radius 0.00654=1Km
-        latmax=float(request.form['I_Lat'])+0.00654
-        latmin=float(request.form['I_Lat'])-0.00654
-        lngmax=float(request.form['I_Lng'])+0.00654
-        lngmin=float(request.form['I_Lng'])-0.00654
-        nearbyIssue=session.query(Issue).filter(Issue.lat<latmax,Issue.lat>latmin, Issue.lng<lngmax,Issue.lng>lngmin).all()
-        return render_template('shownearbyissuemap.html', Issue=nearbyIssue,CurrentLat=request.form['I_Lat'],CurrentLng=request.form['I_Lng'])
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
+        return redirect(url_for('login'))
     else:
-        return render_template('getlocation.html')
+        if request.method == 'POST':
+           #Setting distance as 1KM radius 0.00654=1Km
+            latmax=float(request.form['I_Lat'])+0.00654
+            latmin=float(request.form['I_Lat'])-0.00654
+            lngmax=float(request.form['I_Lng'])+0.00654
+            lngmin=float(request.form['I_Lng'])-0.00654
+            nearbyIssue=session.query(Issue).filter(Issue.lat<latmax,Issue.lat>latmin, Issue.lng<lngmax,Issue.lng>lngmin).all()
+            return render_template('shownearbyissuemap.html', Issue=nearbyIssue,CurrentLat=request.form['I_Lat'],CurrentLng=request.form['I_Lng'])
+        else:
+            return render_template('getlocation.html')
 
 
 @app.route('/issue/nearby/list/', methods=['GET','POST'])
 def showNearbyIssueList():
-    if request.method == 'POST':
-       #Setting distance as 1KM radius 0.00654=1Km
-        latmax=float(request.form['I_Lat'])+0.00654
-        latmin=float(request.form['I_Lat'])-0.00654
-        lngmax=float(request.form['I_Lng'])+0.00654
-        lngmin=float(request.form['I_Lng'])-0.00654
-        nearbyIssue=session.query(Issue).filter(Issue.lat<latmax,Issue.lat>latmin, Issue.lng<lngmax,Issue.lng>lngmin).all()
-        return render_template('shownearbyissuelist.html', Issue=nearbyIssue)
+    if 'logged_in' not in login_session:
+        flash('You need to login first.')
+        return redirect(url_for('login'))
     else:
-        return render_template('getlocation.html')
+        if request.method == 'POST':
+           #Setting distance as 1KM radius 0.00654=1Km
+            latmax=float(request.form['I_Lat'])+0.00654
+            latmin=float(request.form['I_Lat'])-0.00654
+            lngmax=float(request.form['I_Lng'])+0.00654
+            lngmin=float(request.form['I_Lng'])-0.00654
+            nearbyIssue=session.query(Issue).filter(Issue.lat<latmax,Issue.lat>latmin, Issue.lng<lngmax,Issue.lng>lngmin).all()
+            return render_template('shownearbyissuelist.html', Issue=nearbyIssue)
+        else:
+            return render_template('getlocation.html')
 
 #-----------------------------------------------------------------------------------------------------------------   
 
