@@ -33,7 +33,7 @@ session = DBSession()
 #login_session['U_Id']=12
 
 app = Flask(__name__)
-#APP_ROOT=os.path.dirname(os.path.abspath(__file__))
+APP_ROOT=os.path.dirname(os.path.abspath(__file__))
 
 #-----------------------------------------------------------------------------------------------------------------
     
@@ -123,17 +123,17 @@ def newIssue():
             print request.form['I_Content']
             print request.form['I_Type']
             print request.form['I_AnonFlag']
-     #       target=os.path.join(APP_ROOT,'images/')
+            target=os.path.join(APP_ROOT,'images/')
             #print target
-     #       if not os.path.isdir(target):
-     #          os.mkdir(target)
-     #      for file in request.files.getlist("file"):
-     #           print file
-     #          filename=file.filename
+            if not os.path.isdir(target):
+               os.mkdir(target)
+            for file in request.files.getlist("file"):
+               print file
+               filename=file.filename
                 #os.rename(filename,request.form['I_Title'])
-     #           destination="/".join([target,filename])
+               destination="/".join([target,filename])
                # print destination
-     #           file.save(destination)
+               file.save(destination)
                 
             return redirect(url_for('home'))
         else:
