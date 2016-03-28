@@ -1,0 +1,57 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "headerlogin.html" %}
+
+<h1>Welcome to Intelligent Public Grievance Addressal System</h1>
+<br>
+<b><p>This project is used to record grievances form users and display it on a web app which is made using
+
+python. It displays user grievances aesthetically using Google maps API . This web app has functionality 
+
+of creating , reading, updating and deleting user issues,  comments. This app also filters grievances using 
+
+the location of the user .Nearby users can view issues within a radius of 1km. The concept of building 
+
+this web app is unique and has not been implemented on a metropolitan level by the government or any 
+
+private enterprise. This gave us an opportunity to develop this web app and contribute to the city in a 
+
+positive way.  This web app is aimed at spreading awareness among citizens armed with a smartphone 
+
+and also demonstrates the power of citizens in a democratic society. This web app aims to improve 
+
+productivity and coordination between different civic departments. These type of systems are present in 
+
+first world countries like USA but are still not used in countries like India.</p>
+<p>
+Steps for using the web app
+<ul>
+<li>Step 1: Create a new user by entering details which are asked in the signup form.
+
+<li>Step 2: Create a new issue by entering details in the create new issue form. If you don’t have any issues 
+
+then you can visit the view nearby issues in map or list.
+
+<li>Step 3: You can comment, delete comments of other users in your issue.
+
+<li>Step 4: You can comment on issues of other users and edit your comments.
+
+<li>Step 5: All your comments are stored and can retrieved in a different section to view, edit and delete    
+
+them easily.
+
+<li>Step 6: You can read, update and delete your issues in the myissues section. 
+</ul>
+</p>
+<p>
+
+Approach used for building the web app<br>
+
+The programming language used in this project is Python using Flask, Jinja, Wzerg framework. The database is made using SQL
+
+alchemy.HTML, CSS, JAVASCIPT,  JQuery  are used to build the frontend.  Python and SQL Alchemy were selected because of its robust functionality and simplified syntax.
+
+The code is constructed by making functions for each and every operation performed in the web app and a template containing result is rendered in a template displayed in the front end.</p></b>
+
+
+{% endblock %}

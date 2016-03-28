@@ -1,0 +1,61 @@
+<!--<div class="row top-menu">
+	<div class="col-md-6">
+		<a href="{{url_for('home')}}">
+			<span class="glyphicon glyphicon-home" aria-hidden="true"></span>Show All Issue
+		</a>
+	</div>
+	<div class="col-md-6 text-right">
+				<a href="{{url_for('home')}}">	<p>Login Link will go Here </p> </a>
+		
+	</div>
+</div>
+-->
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="{{url_for('welcome')}}">IPGS</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li><a href="{{url_for('home')}}">Home</a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">ME <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{{url_for('showMyIssue')}}">My Issue</a></li>
+            <li><a href="{{url_for('showMyComment')}}">My Comment</a></li>
+          </ul>
+        </li>
+        <li><a href="{{url_for('newIssue')}}">Create New Issue</a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Nearby<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{{url_for('showNearbyIssueMap')}}">View Map</a></li>
+            <li><a href="{{url_for('showNearbyIssueList')}}">View List</a></li>
+          </ul>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a href="{{url_for('login')}}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class = 'flash'>
+          {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          
+        <ul>
+        {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+</div>
