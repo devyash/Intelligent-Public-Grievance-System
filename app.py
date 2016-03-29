@@ -123,17 +123,7 @@ def newIssue():
             print request.form['I_Content']
             print request.form['I_Type']
             print request.form['I_AnonFlag']
-            target=os.path.join(APP_ROOT,'images/')
-            #print target
-            if not os.path.isdir(target):
-               os.mkdir(target)
-            for file in request.files.getlist("file"):
-               print file
-               filename=file.filename
-                #os.rename(filename,request.form['I_Title'])
-               destination="/".join([target,filename])
-               # print destination
-               file.save(destination)
+           
                 
             return redirect(url_for('home'))
         else:
@@ -454,4 +444,5 @@ def gdisconnect():
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
-    app.run(debug=True)
+    app.debug = True
+    app.run(host='0.0.0.0', port=5000)
