@@ -84,21 +84,30 @@ def welcome():
     return render_template('welcome.html')
 #--------------------------------------------------------------------------------------
 @app.route('/user/new/', methods=['GET', 'POST'])
-def newuser():
+def newUser():
     if 'logged_in' in login_session:
         flash('You need to logout first.')
         return redirect(url_for('logout'))
     else:
         if request.method == 'POST':
-            newuser=User(email=request.form['Email'],name=request.form['UserName'],password=request.form['Password'])
-            login_session['U_Id'] =newuser.id
+            AllUser=session.query(User).all()
+            for x in AllUser:
+                if x.name==request.form['UserName'] or x.email==request.form['Email']:
+                    error = 'Username or UserEmail Id already Exist. Please Enter another Name or Email ID'
+                    return render_template('newuser.html',error=error)
+            newUser=User(email=request.form['Email'],name=request.form['UserName'],password=request.form['Password'])
+            session.add(newUser)
+            session.commit()
+            login_session['U_Id'] =newUser.id
+            login_session['logged_in'] = True
             flash('Hello %s'%request.form['UserName'])
-            return render_template('normallogin.html')  
+            return redirect(url_for('home'))
+              
         else:
             return render_template('newuser.html')
 
 @app.route('/user/edit', methods=['GET', 'POST'])
-def edituser():
+def editUser():
     return render_template('edituser.html')
 
 

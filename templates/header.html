@@ -39,7 +39,7 @@
           </ul>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a href="{{url_for('newUser')}}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
         <li><a href="{{url_for('logout')}}"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
       </ul>
     </div>
@@ -59,3 +59,10 @@
     {% endwith %}
 
 </div>
+
+<div class = 'error'>
+        {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}</p>
+        {% endif %}
+</div>
+
