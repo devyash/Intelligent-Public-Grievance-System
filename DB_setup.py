@@ -35,6 +35,9 @@ class Issue(Base):
 	type=Column(Integer,nullable=0)
 	#time=Column(Date)
 	#visible=Column(Boolean,default=True)
+	like=Column(Integer,default=0)
+	dislike=Column(Integer,default=0)
+
 
 class Comment(Base):
 	__tablename__='comment'

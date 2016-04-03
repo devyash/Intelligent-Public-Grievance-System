@@ -149,8 +149,8 @@ def  showDetailedIssue(I_Id):
         showDetailedUser= session.query(User).filter_by(id= showDetailedIssue.author).one()
         Author=showDetailedUser.name
         #temporarily harcoding the likes and dislikes part
-        like=2
-        dislike=2
+        like=showDetailedIssue.like
+        dislike=showDetailedIssue.dislike
         #showDetailedVote = session.query(Issue).filter_by(id = I_Id).all()
         #showDetailedVote = session,query(func.count())   SELECT count(*) 
         #    FROM (SELECT V_flag FROM Votes where V_IssueId = %s AND V_flag = true)
