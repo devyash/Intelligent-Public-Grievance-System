@@ -181,9 +181,12 @@ def editIssue(I_Id):
                 editedIssue.anonFlag = request.form['I_AnonFlag']
             session.add(editedIssue)
             session.commit()        
-            #flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
+            flash('Issue Successfully Edited %s' % editedIssue.title)
             return redirect(url_for('showDetailedIssue',I_Id=I_Id ))
         else:
+            if editedIssue.author != login_session['U_Id']:
+                error="You do not have permission to access this Page!"
+                redirect(url_for('home',error=error ))
             return render_template('editissue.html', Issue=editedIssue)
 
 # Delete a Issue
