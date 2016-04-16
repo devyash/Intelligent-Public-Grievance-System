@@ -43,8 +43,7 @@ APP_ROOT=os.path.dirname(os.path.abspath(__file__))
 @app.route('/main')
 def home():
     if 'logged_in' not in login_session:
-        flash('You need to login first.')
-        return redirect(url_for('login'))
+        return redirect(url_for('welcome'))
     else:
         AllIssue=session.query(Issue).all()
         AllComment=session.query(Comment).all()
@@ -66,7 +65,9 @@ def login():
          error = 'Invalid Credentials. Please try again.'
          return render_template('normallogin.html', error=error)
     else:
-         return render_template('normallogin.html', error=error)
+         state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+         login_session['state'] = state
+         return render_template('normallogin.html', error=error,STATE=state)
 
 @app.route('/logout')
 def logout():
@@ -76,6 +77,35 @@ def logout():
     else:
         login_session.pop('logged_in', None)
         flash('You were logged out.')
+        if (login_session['gplus_id']):
+            access_token = login_session['access_token']
+            print 'In gdisconnect access token is %s', access_token
+            print 'User name is: ' 
+            print login_session['username']
+            if access_token is None:
+                print 'Access Token is None'
+                response = make_response(json.dumps('Current user not connected.'), 401)
+                response.headers['Content-Type'] = 'application/json'
+                return response
+            url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+            h = httplib2.Http()
+            result = h.request(url, 'GET')[0]
+            print 'result is '
+            print result
+            if result['status'] == '200':
+                del login_session['access_token'] 
+                del login_session['gplus_id']
+                del login_session['username']
+                del login_session['email']
+                del login_session['picture']
+                response = make_response(json.dumps('Successfully disconnected.'), 200)
+                response.headers['Content-Type'] = 'application/json'
+                return response
+            else:
+
+                response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+                response.headers['Content-Type'] = 'application/json'
+                return response
         return redirect(url_for('welcome'))
 
 
@@ -406,11 +436,24 @@ def gconnect():
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
-
+    login_session['logged_in'] = True
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
-
+    
+    #if user present in the db getting his U_ID if not creating a new user
+    AllUser=session.query(User).all()
+    for u in AllUser:
+        if( login_session['username']==u.name): 
+                login_session['U_Id']=u.id
+                return redirect(url_for('home'))
+    if not (login_session['U_Id']):
+        newUser=User(email=login_session['email'],name=login_session['username'],password='google')
+        session.add(newUser)
+        session.commit()
+        login_session['U_Id'] =newUser.id
+        flash('Hello %s'%request.form['UserName'])
+        return redirect(url_for('home'))     
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']

@@ -8,9 +8,6 @@
 <h1>Issues:</h1>
 {% for i in Issue%}
 {{i.title}}&emsp;&emsp;&emsp;&emsp;
-<a href = "{{url_for('editIssue', I_Id=i.id)}}">Edit</a>&emsp;&emsp;&emsp;&emsp;
-<a href = "{{url_for('deleteIssue', I_Id=i.id)}}">Delete</a><br>
-{% endfor %}
 {% endif %}
 {% if not Issue %}
 <h1> No NearBy Issues :( </h1>

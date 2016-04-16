@@ -2,6 +2,37 @@
 {% block content %}
 {% include "headerlogin.html" %}
 
+<script src="//apis.google.com/js/platform.js?onload=start"> </script>
+<script>
+function signInCallback(authResult) {
+  if (authResult['code']) {
+    // Hide the sign-in button now that the user is authorized
+    $('#signinButton').attr('style', 'display: none');
+    // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+    $.ajax({
+      type: 'POST',
+      url: '/gconnect?state={{STATE}}',
+      processData: false,
+      data: authResult['code'],
+      contentType: 'application/octet-stream; charset=utf-8',
+      success: function(result) {
+        // Handle or verify the server response if necessary.
+        if (result) {
+          $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+         setTimeout(function() {
+          window.location.href = "/main";
+         }, 4000);
+          
+      } else if (authResult['error']) {
+    console.log('There was an error: ' + authResult['error']);
+  } else {
+        $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+         }
+      }
+      
+  }); } }
+</script>
+
 <h1>Please login</h1>
 <br>
 <form action="" method="post">
@@ -9,5 +40,27 @@
   <input type="password" placeholder="Password" name="password" value="{{request.form.password }}">
   <input class="btn btn-default" type="submit" value="Login">
 </form>
+<br>
+ <h4> Login using Google</h4>
+<!-- GOOGLE PLUS SIGN IN BUTTON-->
+
+          
+          <div id="signInButton">
+          <span class="g-signin"
+            data-scope="openid email"
+            data-clientid="857103888338-iflsfpjg332n5jufd4d1sbt6vkqefqga.apps.googleusercontent.com"
+            data-redirecturi="postmessage"
+            data-accesstype="offline"
+            data-cookiepolicy="single_host_origin"
+            data-callback="signInCallback"
+            data-approvalprompt="force">
+          </span>
+        </div>
+
+
+
+
+<!--END GOOGLE PLUS SIGN IN BUTTON -->
+<div id="result"></div>
 
 {% endblock %}
