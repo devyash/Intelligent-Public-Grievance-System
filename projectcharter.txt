@@ -1,0 +1,131 @@
+Public Grievance Addressal System
+Project ID: group 5
+Project Name: Public Grievance Addressal System
+
+Project Stakeholders:
+
+   AndiosDroid(Copyright pending) 
+
+   Full stack developer:
+     Devyash Sanghai
+     Roll no:52
+     Phone no: 8080216490
+     Email Address: devbackhome@gmail.com
+   
+  Android Developer:
+     Samir Shah
+     Roll no: 59
+     Phone no: 9930281833
+     Email  Address: sjshah.shah8@gmail.com
+
+Project Decription:
+ Background:
+   This idea has been inspired from existing application using by Boston City council and London        
+   city authority. This application has a very good growth potential in Indian metro cities.
+   This application suite comprises of various small application connected by common    
+   communication backbone.   
+   This is a crowd sourcing application where input or issue will be logged by responsible civilian     
+   of  the city.
+  
+ Challenges:
+     Usage of google maps API  and maintaining the database for multiple enteries
+     Developing a responsive and well synchronised application
+
+Opportunities:
+     Direct Implementation of the app in the BMC application that is already available in the app   
+     store.
+     Learining google web apps,python and android application development
+
+Measurable Organizational Value(MOV):
+    “ To be a freethinker and develop IT solutions for the benefit of the society ”
+
+Project Scope: 
+   There would be one map based mobile application, where civilian can record following issue of       
+    street.
+1, Potholes
+2, Blocked Drain
+3, Streetlight Maintenance
+4, Encroachment in No Parking Zone
+5, Contamination of water supply.
+    They can capture various description of problem by supplying its real time snap associated with    
+    exact map location. Moreover, they can supply addition information like is it an asphalt road? Is   
+    it a paver block road?  Is it a synthetic cement road? Also user can provide possible reason of  
+    pothole like due to underground cable maintenance? It is due to drainage maintenance? Etc
+Authentication would be supplied by user (Facebook or Google Account), where as mobile number will be optional with an OTP in further versions.) 
+ It will make the system of collecting complains:
+   Transperant
+    Less Tedios
+    Open
+
+
+Project Schedule Summary:
+   Project start date:11thJuly 2015
+   Project end date:31st March 2016 
+   Timeline:
+
+Project Budget Summary:
+   Total Project Budget:
+     10,000 Rs. pa(approx )
+    Budget Broken Down By phase:
+      Initiial:
+             Training: Cost of resources(Free and paid courses) 
+      Deployment cost:
+             Cost of Server:depends on the usage
+             Cost of domain:1500 INR yearly.
+
+Quality Issues:
+       The design should be fluid and well as reponsive.
+       The design should be userfriendly for all age groups.
+       The design should implemented such that the referesh rate should be high.
+       The design should work well for desktop,tablet, and mobile screens.
+
+Resources Required:
+       Training material:
+           Python,Rest API,HTML5/CCS3,Bootstrap,Github,Android Development, Realtional      
+           Database,Javascript,Google Maps API usage, 
+       Software:
+           Android Studio,Photoshop(Paid),Google Polymer, Google App engine,Python SDK,Google   
+           API usage,O Authentication:Facebook,Google, GitHub, Bootstrap.
+       Technology:
+            Python,HTML/CSS,Javacript,SQL Alchemy, Android
+
+Assumption and Risks:
+    Assumption used to develop estimate:   
+       Training period is successfull completed on time.
+       Software Develpoment is possible with all the current resources.
+       Software doesnot require technologies out of scope.
+       User andoid software is above API level 15(Icecream sandwhich) 
+    Key risk probablilty of occurance and impact:
+       App crash due to inaccesbile datebase
+       App crash due to loss of internet connection
+       App crash due to inablity to track geolocation
+       Unable to perform facebook and google authentication(User does not have an id)
+    Constraints:
+       Flegling developers
+       Time constrains
+       Connectivity issue between different technologies
+    Dependancies on other projects or areas within or outside the organisation:
+       Google Web App2 framework
+       Android API lvl 15 SDK 
+    Assessment projects impact on organisation:
+       Burgeon of the company to newer projects by the BMC and rest of india.
+    Outstanding issues:
+       None
+ 
+Project Adminsitration:
+    Communication plan
+       Backend-Website Developer:Android Developer, if any problem persist search internet if no solution fun contach friends
+    Scope manangement plan
+    quality management plan
+    change manangement plan
+    Human resources plan
+    Implementation and project closure plan:
+Acceptance and Approval:
+     Name,Signatures and dates for approval
+References
+Terminology and Glossary:
+Appendix:              
+
+         
+  
+            
