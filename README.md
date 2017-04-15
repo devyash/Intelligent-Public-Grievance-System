@@ -9,8 +9,8 @@ The grievance would then be codified according to user location or pre-set const
 The aim of this project is to develop an end user review based informal complaining platform
 
 ## READ the file below for running the app: 
-[Running the application]("https://github.com/devyash/Intelligent-Public-Grievance-System/blob/master/Project%20ppt1%20(1).pptx")
+[Running the application](https://github.com/devyash/Intelligent-Public-Grievance-System/blob/master/Project%20ppt1%20(1).pptx)
 
 
 ## Research Paper
-[Research Paper Link]("http://www.ijsrd.com/C_Article.php?manuscript=NCTAAP078")
+[Research Paper Link](http://www.ijsrd.com/C_Article.php?manuscript=NCTAAP078)
