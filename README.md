@@ -8,5 +8,9 @@ The user can access the GUI using Chrome, Safari or any other supported HTML 5 s
 The grievance would then be codified according to user location or pre-set constraints.
 The aim of this project is to develop an end user review based informal complaining platform
 
-READ the file below for running the app: 
-Intelligent-Public-Grievance-System/Project ppt1 (1).pptx
+## READ the file below for running the app: 
+[Running the application]("https://github.com/devyash/Intelligent-Public-Grievance-System/blob/master/Project%20ppt1%20(1).pptx")
+
+
+## Research Paper
+[Research Paper Link]("http://www.ijsrd.com/C_Article.php?manuscript=NCTAAP078")
